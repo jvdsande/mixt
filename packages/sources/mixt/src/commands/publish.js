@@ -149,6 +149,16 @@ export async function command({
       }
     }
   }
+
+  if(isRepo) {
+    try {
+      await git.push()
+      await git.pushTags()
+    } catch(err) {
+      cli.error('An error occured while pushing changes')
+      cli.error(err)
+    }
+  }
 }
 
 /** Command export */

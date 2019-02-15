@@ -80,16 +80,25 @@ to automatically rebuild the changed package. Use this in development to be able
 
 If your package has a `watch` script, **Mixt** calls it and defer the filesystem watching to it.
 
+### `mixt clean` :
+
+Cleans the `packages/node_modules` folder completely.
+
 ### `mixt resolve` :
 
 This step, automatically called after `mixt build`, resolves for you all the dependencies of your packages
 and updates the produced `package.json` accordingly. See [Dependency Handling](#dependency-handling) for more details about
 the dependency system used by **Mixt**.
 
-### `mixt publish` : (WIP)
+### `mixt status` :
 
-The publish script (work in progress, not yet available) handles the publishing process of your packages.
-For each package, **Mixt** asks you for an increment of version (or a custom one), updates the source
+List the packages that have changed since the last release. If you are using Git, a diff is made
+against the latest tag. If not, then all packages are automatically marked as changed.
+
+### `mixt publish` : 
+
+The publish script handles the publishing process of your packages.
+For each changed package (see `status` above), **Mixt** asks you for an increment of version (or a custom one), updates the source
 `package.json`, runs your build script and publishes the updated packages using `npm publish`.
 
 If your folder hosts a Git repository, tags are automatically created for each package with the newly used version.
@@ -157,3 +166,55 @@ for any package required, and then resolving it either from your `package.json`,
 If you don't want the *resolve* step to decide by itself the version of a common dependency or local package,
 simply add an entry manually to the package's `package.json`: it always takes precedence over the common and 
 local dependencies.
+
+## Customizing the structure
+
+When using **Mixt**, you can choose to change the default naming of folders. For instance, you might want to use 
+a `pkg` folder instead of `packages`. Or you might want to split your sources between multiple folders.
+
+All of this is possible either by providing a configuration file, or by passing options to commands.
+
+
+### Using options
+
+For almost all commands, you can use the following options to modify the default behavior:
+
+`--root [root]`: specify a working directory all the other paths belong to. Defaults to the current
+working directory.
+
+`--packages [packages]`: specify the directory containing the local modules. Defaults to `packages`.
+This can be an absolute path, or a relative path. If a relative path is provided, it is resolved based on
+the `root` folder.
+
+`--sources [sources]`: comma-separated list of source folders. Source folders must be relative paths, and are
+located inside the `packages` folder.
+
+### Using a config file
+
+If you want to avoid passing options to each of your commands, you can opt for a configuration file.
+This configuration file should lie at the root of your **Mixt** project, and must be called `mixt.json`.
+
+This is what the default configuration file would look like:
+
+```
+{
+  "packages": "packages",
+  "sources": [
+    "sources"
+  ]
+}
+```
+
+### Using `package.json`
+
+If you'd rather not add another file to your project, you can configure **Mixt** directly
+from your `package.json` file. Simply add a `"mixt"` entry that holds the same value you would
+put in the `mixt.json` file
+
+### Option resolve
+
+So what happens if you mix and match any or all of the three methods above? An order of priority is respected.
+
+**Mixt** will start by looking for options directly passed to the command. If a value is not found, it will
+then look into the `mixt.json` file. If not found, it will look for a `mixt` entry in your `package.json`. And finally,
+if an option hasn't been found at the end of the process, the default value is used.
