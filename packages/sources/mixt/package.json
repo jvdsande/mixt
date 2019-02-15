@@ -1,0 +1,30 @@
+{
+  "name": "mixt",
+  "version": "0.1.4",
+  "description": "A simple packager for Node mono-repo",
+  "@pika/pack": {
+    "pipeline": [
+      [
+        "@pika/plugin-standard-pkg"
+      ],
+      [
+        "@pika/plugin-build-node"
+      ],
+      [
+        "@pika/plugin-bundle-node"
+      ],
+      [
+        "@pika/plugin-simple-bin",
+        {
+          "bin": "mixt"
+        }
+      ]
+    ]
+  },
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jérémie van der Sande <jeremie.vandersande@gmail.com>",
+  "license": "ISC"
+}
