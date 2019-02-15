@@ -143,7 +143,7 @@ export async function command({
 
     if(isRepo) {
       try {
-        await git.addTag(`${gitConfig.tagPrefix}${gitConfig.tagPrefix !== '' ? '-' : ''}${pkg.json.name}@v${pkg.version}`)
+        await git.addTag(`${gitConfig.tagPrefix}${gitConfig.tagPrefix !== '' ? '-' : ''}${pkg.json.name}@${pkg.version}`)
       } catch(err) {
         cli.error(`A tag with this version name already exists: ${pkg.json.name}@${pkg.version}. It has not been overwritten`)
       }
