@@ -1,6 +1,6 @@
 {
   "name": "mixt",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "A simple packager for Node mono-repo",
   "@pika/pack": {
     "pipeline": [

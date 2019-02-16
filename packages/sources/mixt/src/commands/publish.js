@@ -125,15 +125,6 @@ export async function command({
 
   modifiedPackages = modifiedPackages.filter(pkg => pkg.version !== 'Do not release')
 
-
-  // Commit to git
-  if(isRepo) {
-    await Promise.all(sourcesDir.map(async source => {
-      await git.add(source)
-    }))
-    await git.commit("[Release] " + modifiedPackages.map(pkg => pkg.json.name + '@' + pkg.version).join(','))
-  }
-
   for (const pkg of modifiedPackages) {
     await publishPackage({
       pkg,
@@ -146,12 +137,22 @@ export async function command({
       globalPackages,
       cheap,
     })
+  }
 
+  // Commit to git
+  if(isRepo) {
+    await Promise.all(sourcesDir.map(async source => {
+      await git.add(source)
+    }))
+    await git.commit("[Release] " + modifiedPackages.map(pkg => pkg.json.name + 'v' + pkg.version).join(','))
+  }
+
+  for (const pkg of modifiedPackages) {
     cli.info("Creating git tags...")
-    if(isRepo && tag) {
+    if (isRepo && tag) {
       try {
         await git.addTag(`${gitConfig.tagPrefix}${gitConfig.tagPrefix !== '' ? '-' : ''}${pkg.json.name}@${pkg.version}`)
-      } catch(err) {
+      } catch (err) {
         cli.error(`A tag with this version name already exists: ${pkg.json.name}@${pkg.version}. It has not been overwritten`)
       }
     }
