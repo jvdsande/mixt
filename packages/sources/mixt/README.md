@@ -48,7 +48,7 @@ npm install -g mixt
 ```
 
 From there, you obtain access to the following commands. 
-For a more thorough explanations of all commands, refer to the [command help page](/docs/COMMANDS.md)
+For a more thorough explanations of all commands, refer to the [command help page](docs/COMMANDS.md)
 
 ### `mixt init` :
 
