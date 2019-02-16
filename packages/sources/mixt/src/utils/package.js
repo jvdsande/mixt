@@ -51,7 +51,7 @@ export async function getPackages(sourceDir) {
   await Promise.all(sourceDirChild.filter(pkg => pkg.startsWith('@'))
     .map(async scope => {
       const scopeFolders = (await readDir(path.resolve(sourceDir, scope))).filter(pkg => {
-        return fs.lstatSync(path.resolve(sourceDir, pkg)).isDirectory() && fs.existsSync(path.resolve(sourceDir, pkg, 'package.json'))
+        return fs.lstatSync(path.resolve(sourceDir, scope, pkg)).isDirectory() && fs.existsSync(path.resolve(sourceDir, scope, pkg, 'package.json'))
       })
 
       pkgFolders.push(...scopeFolders.map(f => scope + '/' + f))
