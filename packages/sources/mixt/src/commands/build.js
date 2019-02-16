@@ -84,9 +84,9 @@ export default function BuildCommand(program) {
   Command(program, {
     name: 'build [packages...]',
     options: [
-      options.cheap,
       options.noResolve,
       options.quietBuild,
+      options.cheap,
     ],
     command,
   })

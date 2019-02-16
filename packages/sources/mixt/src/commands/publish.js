@@ -144,7 +144,7 @@ export async function command({
     await Promise.all(sourcesDir.map(async source => {
       await git.add(source)
     }))
-    await git.commit("[Release] " + modifiedPackages.map(pkg => pkg.json.name + 'v' + pkg.version).join(','))
+    await git.commit("[Release] " + modifiedPackages.map(pkg => pkg.json.name + '-' + pkg.version).join(','))
   }
 
   for (const pkg of modifiedPackages) {
