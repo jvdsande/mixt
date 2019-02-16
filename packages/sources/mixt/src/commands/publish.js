@@ -61,13 +61,13 @@ async function publishPackage({
 
   // Update the package.json
   json.version = version
-  saveJson(path.resolve(cwd, 'package.json'), json)
+  await saveJson(path.resolve(cwd, 'package.json'), json)
 
   // If we don't build, manually update the built package.json
   if(!build) {
     const builtJson = await getPackageJson(packagesDir, name)
     builtJson.version = version
-    saveJson(path.resolve(packagesDir, name, 'package.json'), builtJson)
+    await saveJson(path.resolve(packagesDir, name, 'package.json'), builtJson)
   } else {
     await buildPackage({ source: pkg.source, pkg, packagesDir, quietBuild })
   }
