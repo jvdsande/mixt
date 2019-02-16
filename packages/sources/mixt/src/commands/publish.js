@@ -55,7 +55,7 @@ async function prepublishPackage({ pkg }) {
 
 async function publishPackage({
   pkg, packagesDir, rootDir, quietBuild, resolve, build, tag,
-  localPackages, globalPackages
+  localPackages, globalPackages, cheap,
 }) {
   const { json, version, cwd } = pkg
 
@@ -74,7 +74,8 @@ async function publishPackage({
 
   if(resolve) {
     await resolvePackage({
-      pkg, packagesDir,
+      cheap,
+      pkg: pkg.json.name, packagesDir,
       localPackages,
       globalPackages,
     })
@@ -98,7 +99,7 @@ export async function command({
   rootDir, packagesDir, sourcesDir,
   packages,
   quietBuild, build, tag, resolve,
-  git: gitConfig,
+  git: gitConfig, cheap,
 }) {
   let modifiedPackages = await getStatus({
     rootDir, packagesDir, sourcesDir, packages,
@@ -142,7 +143,8 @@ export async function command({
       resolve,
       build,
       localPackages,
-      globalPackages
+      globalPackages,
+      cheap,
     })
 
     cli.info("Creating git tags...")
@@ -179,6 +181,7 @@ export default function PublishCommand(program) {
       options.noTag,
       options.branch,
       options.prefix,
+      options.cheap,
     ],
     command,
   })
