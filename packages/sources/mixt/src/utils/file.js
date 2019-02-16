@@ -12,3 +12,7 @@ export const writeFile = promisify(fs.writeFile)
 export async function getJson(file) {
   return JSON.parse((await readFile(file, 'utf-8')) || '{}')
 }
+
+export async function saveJson(file, json) {
+  return await writeFile(file, JSON.stringify(json, null, 2) + '\n', 'utf-8')
+}

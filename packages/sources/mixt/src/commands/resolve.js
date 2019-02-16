@@ -2,25 +2,13 @@ import cli from 'cli'
 import depcheck from 'depcheck'
 import path from 'path'
 
-import Command from '../command'
+import Command, { options } from '../command'
 
-import { readFile, writeFile } from '../utils/file'
+import {getJson, saveJson} from '../utils/file'
 import {cleanPackagesDirectory, getGlobalPackages, getLocalPackages, getPackages} from '../utils/package'
 
 /** Private functions */
-export async function resolvePackage({
-  pkg,
-  packagesDir,
-  localPackages,
-  globalPackages,
-}) {
-  const projectDir = pkg.startsWith('/') ? pkg : path.resolve(packagesDir, pkg)
-
-  const projectJson = path.resolve(projectDir, 'package.json')
-
-  cli.info('Checking package ' + projectDir)
-
-  // Check the dependencies of the provided package
+async function fullResolve({ projectDir }) {
   return new Promise((resolve) => {
     const options = {
       ignoreBinPackage: false, // ignore the packages with bin entry
@@ -28,43 +16,62 @@ export async function resolvePackage({
     }
 
     depcheck(projectDir, options, async (unused) => {
-      const using = Object.keys(unused.using)
-
-      const packageJson = JSON.parse(await readFile(projectJson, 'utf-8'))
-      packageJson.dependencies = packageJson.dependencies || {}
-
-      let missing = false
-
-      using.forEach(m => {
-        const oldDep = packageJson.dependencies[m]
-        packageJson.dependencies[m] = oldDep || localPackages[m] || globalPackages[m]
-
-        if(!packageJson.dependencies[m]) {
-          cli.error('Missing dependency: ' + m)
-          missing = true
-        } else if(!oldDep) {
-          cli.info('Added dependency ' + m + ' with version ' + packageJson.dependencies[m])
-        } else if(oldDep !== packageJson.dependencies[m]) {
-          cli.info('Updated dependency ' + m + ' to version ' + packageJson.dependencies[m])
-        }
-      })
-
-      await writeFile(projectJson, JSON.stringify(packageJson, null, 2), 'utf-8')
-
-      if(!missing) {
-        cli.ok('Project up to date')
-      }
-
-      return resolve(true)
+      resolve(Object.keys(unused.using))
     })
   })
+}
+
+async function cheapResolve({ packageJson }) {
+  return Object.keys(packageJson.dependencies)
+}
+
+export async function resolvePackage({
+  pkg,
+  packagesDir,
+  localPackages,
+  globalPackages,
+  cheap,
+}) {
+  const projectDir = pkg.startsWith('/') ? pkg : path.resolve(packagesDir, pkg)
+
+  const projectJson = path.resolve(projectDir, 'package.json')
+
+  const packageJson = getJson(projectJson)
+  packageJson.dependencies = packageJson.dependencies || {}
+
+  cli.info('Checking package ' + projectDir)
+
+  // Check the dependencies of the provided package
+  const using = cheap ? await cheapResolve({ packageJson }) : await fullResolve({ projectDir })
+
+  let missing = false
+
+  using.forEach(m => {
+    const oldDep = packageJson.dependencies[m] !== '*' ? packageJson.dependencies[m] : null
+    packageJson.dependencies[m] = oldDep || localPackages[m] || globalPackages[m]
+
+    if(!packageJson.dependencies[m]) {
+      cli.error('Missing dependency: ' + m)
+      missing = true
+    } else if(!oldDep) {
+      cli.info('Added dependency ' + m + ' with version ' + packageJson.dependencies[m])
+    } else if(oldDep !== packageJson.dependencies[m]) {
+      cli.info('Updated dependency ' + m + ' to version ' + packageJson.dependencies[m])
+    }
+  })
+
+  await saveJson(projectJson, packageJson)
+
+  if(!missing) {
+    cli.ok('Project up to date')
+  }
 }
 
 
 /** Command function **/
 export async function command({
   rootDir, packagesDir, sourcesDir,
-  packages,
+  packages, cheap,
 }) {
   await cleanPackagesDirectory(sourcesDir, packagesDir)
 
@@ -81,6 +88,7 @@ export async function command({
       packagesDir,
       localPackages,
       globalPackages,
+      cheap,
     })
   }
 }
@@ -89,6 +97,9 @@ export async function command({
 export default function ResolveCommand(program) {
   Command(program, {
     name: 'resolve [packages...]',
+    options: [
+      options.cheap,
+    ],
     command,
   })
 }

@@ -1,19 +1,18 @@
 import cli from 'cli'
 import fs from "fs"
 import { resolve } from "path"
-import { getJson, readDir, readFile } from './file'
+import { getJson, readDir } from './file'
 import { spawnCommand } from './process'
 
 export async function getLocalPackages (packagesDir) {
   const packages = await readDir(packagesDir)
 
-  const packagesJson = await Promise.all(packages.map(p => readFile(resolve(packagesDir, p, 'package.json'), 'utf-8').catch(err => {})))
+  const packagesJson = await Promise.all(packages.map(p => getJson(resolve(packagesDir, p, 'package.json')).catch(err => {})))
 
   const modules = {}
 
-  packagesJson.forEach(m => {
-    if(m) {
-      const json = JSON.parse(m)
+  packagesJson.forEach(json => {
+    if(json) {
       modules[json.name] = '^' + json.version
     }
   })
@@ -22,7 +21,7 @@ export async function getLocalPackages (packagesDir) {
 }
 
 export async function getGlobalPackages(rootDir) {
-  const rootJson = JSON.parse(await readFile(resolve(rootDir, 'package.json')))
+  const rootJson = getJson(resolve(rootDir, 'package.json'))
 
   return rootJson.dependencies
 }
@@ -61,7 +60,7 @@ export async function getPackageJson(source, pkg) {
   }
 }
 
-export function getSources(srcs, packagesDir) {
+export function getSources(srcs, packagesDir, init) {
   const sources = (srcs).split(',')
     .filter(source => {
       if(source === 'node_modules') {
@@ -73,7 +72,7 @@ export function getSources(srcs, packagesDir) {
     })
     .map(source => resolve(packagesDir, './' + source))
     .filter(source => {
-      if(!fs.existsSync(source)) {
+      if(!init && !fs.existsSync(source)) {
         cli.info('Source dir "' + source + '" could not be found. Ignoring...')
         return false
       }

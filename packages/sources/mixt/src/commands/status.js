@@ -1,8 +1,8 @@
 import cli from 'cli'
 import path from 'path'
 import Command from '../command'
-import {Git} from '../utils/git'
-import {getPackagesBySource} from '../utils/package'
+import { Git } from '../utils/git'
+import { getPackagesBySource } from '../utils/package'
 
 /** Private functions **/
 export async function getStatus({
@@ -21,8 +21,8 @@ export async function getStatus({
 
     const status = await git.status()
 
-    if(status.files.length && false) {
-      cli.fatal("Found uncommited work. Please commit before running the publish command!")
+    if(status.files.length) {
+      cli.fatal("Found uncommitted work. Please commit before running the publish command!")
     }
 
     await git.fetch()

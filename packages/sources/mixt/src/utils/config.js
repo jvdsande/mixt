@@ -11,12 +11,12 @@ export async function getMixtJson(source) {
   }
 }
 
-export async function getConfig(cmd) {
+export async function getConfig(cmd, loadConfig) {
   const root      = cmd.root || './'
   const rootDir   = path.resolve(process.env.PWD, root)
 
-  const config    = await getMixtJson(rootDir)
-  const json      = (await getPackageJson(rootDir)).mixt || {}
+  const config    = loadConfig ? await getMixtJson(rootDir) : {}
+  const json      = loadConfig ? ((await getPackageJson(rootDir)).mixt || {}) : {}
 
   const packages  = cmd.packages || config.packages || json.packages || './packages'
   let packagesDir = packages.startsWith('/') ? packages : path.resolve(rootDir, packages)
@@ -28,7 +28,7 @@ export async function getConfig(cmd) {
   const configSources = config.sources ? config.sources.join(',') : null
   const jsonSources   = json.sources ? json.sources.join(',') : null
 
-  const sourcesDir    = getSources(cmd.sources || configSources || jsonSources || 'sources', path.resolve(packagesDir, '../'))
+  const sourcesDir    = getSources(cmd.sources || configSources || jsonSources || 'sources', path.resolve(packagesDir, '../'), !loadConfig)
 
   const gitBranch     =  cmd.branch || (config.git && config.git.branch) || (json.git && json.git.branch) || 'master'
   const gitTagPrefix  = cmd.tagPrefix || (config.git && config.git.tagPrefix) || (json.git && json.git.tagPrefix) || ''

@@ -3,9 +3,9 @@ import cliAsk from 'inquirer'
 import path from 'path'
 import semver from 'semver'
 
-import Command from '../command'
+import Command, { options } from '../command'
 
-import { writeFile } from '../utils/file'
+import { saveJson } from '../utils/file'
 import { Git } from '../utils/git'
 import { getGlobalPackages, getLocalPackages, getPackageJson } from '../utils/package'
 import { spawnCommand} from '../utils/process'
@@ -54,22 +54,22 @@ async function prepublishPackage({ pkg }) {
 }
 
 async function publishPackage({
-  pkg, packagesDir, rootDir, silentBuilds, res, build, tag,
+  pkg, packagesDir, rootDir, quietBuild, res, build, tag,
   localPackages, globalPackages
 }) {
   const { json, version, cwd } = pkg
 
   // Update the package.json
   json.version = version
-  writeFile(path.resolve(cwd, 'package.json'), JSON.stringify(json, null, 2), 'utf-8')
+  saveJson(path.resolve(cwd, 'package.json'), json)
 
   // If we don't build, manually update the built package.json
   if(!build) {
     const builtJson = await getPackageJson(packagesDir, name)
     builtJson.version = version
-    writeFile(path.resolve(packagesDir, name, 'package.json'), JSON.stringify(builtJson, null, 2), 'utf-8')
+    saveJson(path.resolve(packagesDir, name, 'package.json'), builtJson)
   } else {
-    await buildPackage({ source: pkg.source, pkg, packagesDir, silentBuilds })
+    await buildPackage({ source: pkg.source, pkg, packagesDir, quietBuild })
   }
 
   if(res) {
@@ -78,6 +78,11 @@ async function publishPackage({
       localPackages,
       globalPackages,
     })
+  }
+
+  if(pkg.json.private) {
+    cli.info(`Package "${pkg.json.name} is private. Skipping publish step.`)
+    return
   }
 
   cli.info(`Publishing package "${pkg.json.name}" version ${pkg.version}...`)
@@ -92,7 +97,7 @@ async function publishPackage({
 export async function command({
   rootDir, packagesDir, sourcesDir,
   packages,
-  silentBuilds, build, tag, resolve,
+  quietBuild, build, tag, resolve,
   git: gitConfig,
 }) {
   let modifiedPackages = await getStatus({
@@ -133,15 +138,14 @@ export async function command({
       pkg,
       packagesDir,
       rootDir,
-      silentBuilds,
+      quietBuild,
       resolve,
       build,
-      tag,
       localPackages,
       globalPackages
     })
 
-    if(isRepo) {
+    if(isRepo && tag) {
       try {
         await git.addTag(`${gitConfig.tagPrefix}${gitConfig.tagPrefix !== '' ? '-' : ''}${pkg.json.name}@${pkg.version}`)
       } catch(err) {
@@ -166,10 +170,12 @@ export default function PublishCommand(program) {
   Command(program, {
     name: 'publish [packages...]',
     options: [
-      ['-S, --silent-builds', 'Turn off logging for build scripts'],
-      ['-R, --no-resolve', 'Do not resolve packages before publishing (not recommended)'],
-      ['-B, --no-build', 'Do not build packages before publishing (not recommended)'],
-      ['-T, --no-tag', 'Do not add Git tag after publishing'],
+      options.quietBuild,
+      options.noBuild,
+      options.noResolve,
+      options.noTag,
+      options.branch,
+      options.prefix,
     ],
     command,
   })

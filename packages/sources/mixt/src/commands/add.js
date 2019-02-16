@@ -1,6 +1,6 @@
 import path from 'path'
 
-import Command from '../command'
+import Command, { options } from '../command'
 
 import { spawnCommand } from '../utils/process'
 
@@ -36,7 +36,7 @@ export default function AddCommand(program) {
     name: 'add <pkg>',
     command,
     options: [
-      ['-s, --source [source]', 'Source folder to use (subdirectory of packages)']
+      options.source,
     ]
   })
 }

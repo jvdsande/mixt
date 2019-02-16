@@ -1,13 +1,16 @@
-import Command from '../command'
+import path from 'path'
+
+import Command, { options } from '../command'
+import {getJson, saveJson} from '../utils/file'
 
 import { spawnCommand } from '../utils/process'
 
 /** Command function **/
 export async function command({
-  rootDir, packagesDir, sourcesDir,
+  rootDir, packagesDir, sourcesDir, config,
 }) {
   // Create the packages directory
-  await spawnCommand('mkdir', ['-p', packagesDir], { cwd: rootDir }, true)
+  await spawnCommand('mkdir', ['-p', packagesDir], {}, true)
 
   // Create all the sources directories
   for(const source of sourcesDir) {
@@ -18,12 +21,40 @@ export async function command({
   await spawnCommand('npm', ['init'], {
     cwd: rootDir
   })
+
+
+  // Write the config if needed
+  if(config) {
+    const pkgsDir = path.resolve(packagesDir, '../')
+
+    const packages = pkgsDir.split(rootDir)[1].slice(1)
+    const sources = sourcesDir.map(s => s.split(pkgsDir)[1].slice(1))
+
+    let conf = {
+      packages,
+      sources
+    }
+
+    const confFile = config === 'embed' ? 'package.json' : 'mixt.json'
+
+    if(config === 'embed') {
+      const json = await getJson(path.resolve(rootDir, confFile))
+      json.mixt = conf
+      conf = json
+    }
+
+    await saveJson(path.resolve(rootDir, confFile), conf)
+  }
 }
 
 /** Command export */
 export default function InitCommand(program) {
   Command(program, {
     name: 'init',
+    loadConfig: false,
+    options: [
+      options.config
+    ],
     command,
   })
 }

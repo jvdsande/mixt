@@ -1,7 +1,7 @@
 import cli from 'cli'
 import path from "path"
 
-import Command from '../command'
+import Command, { options } from '../command'
 import { getBuilder } from '../builders'
 
 import {cleanPackagesDirectory, getPackageJson, getPackagesBySource} from '../utils/package'
@@ -10,7 +10,7 @@ import { createStub, spawnCommand } from '../utils/process'
 import { command as Resolve } from './resolve'
 
 /** Private functions **/
-export async function buildPackage({ source, pkg, packagesDir, silentBuilds }) {
+export async function buildPackage({ source, pkg, packagesDir, quietBuild }) {
   cli.info('Building ' + JSON.stringify(pkg.json.name))
 
   // Delete the build folder
@@ -18,7 +18,7 @@ export async function buildPackage({ source, pkg, packagesDir, silentBuilds }) {
     'rm',
     ['-rf', path.resolve(packagesDir, `./${pkg.json.name}`)],
     {},
-    silentBuilds
+    quietBuild
   )
 
   // Check if a "build" script is present
@@ -27,18 +27,19 @@ export async function buildPackage({ source, pkg, packagesDir, silentBuilds }) {
   if(buildScript) {
     cli.info('Build script found. Executing "npm run build"....')
 
-    await spawnCommand('npm', ['run build'], { cwd: pkg.cwd }, silentBuilds)
+    await spawnCommand('npm', ['run build'], { cwd: pkg.cwd }, quietBuild)
   }
 
   const builder = await getBuilder(pkg.json)
 
-  await builder(pkg.cwd, pkg.json, packagesDir, silentBuilds)
+  await builder(pkg.cwd, pkg.json, packagesDir, quietBuild)
 }
 
 /** Command function **/
 export async function command({
   rootDir, packagesDir, sourcesDir,
-  silentBuilds, resolve, packages
+  quietBuild, resolve, packages,
+  cheap,
 }) {
   const start = new Date()
 
@@ -59,7 +60,7 @@ export async function command({
     cli.info(`Found ${source.packages.length} package${source.packages.length > 1 ? 's' : ''} in ${source.source}`)
 
     for(const pkg of source.packages) {
-      await buildPackage({ source, pkg, packagesDir, silentBuilds })
+      await buildPackage({ source, pkg, packagesDir, quietBuild })
       nbPackages += 1
     }
   }
@@ -73,7 +74,7 @@ export async function command({
 
   if(resolve) {
     await Resolve({
-      packages, packagesDir, rootDir, sourcesDir,
+      packages, packagesDir, rootDir, sourcesDir, cheap,
     })
   }
 }
@@ -83,8 +84,9 @@ export default function BuildCommand(program) {
   Command(program, {
     name: 'build [packages...]',
     options: [
-      ['-R, --no-resolve', 'Whether to run the resolve command after building'],
-      ['-S, --silent-builds', 'Turn off logging for build scripts']
+      options.cheap,
+      options.noResolve,
+      options.quietBuild,
     ],
     command,
   })
