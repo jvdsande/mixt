@@ -81,7 +81,7 @@ async function publishPackage({
   }
 
   if(pkg.json.private) {
-    cli.info(`Package "${pkg.json.name} is private. Skipping publish step.`)
+    cli.info(`Package "${pkg.json.name}" is private. Skipping publish step.`)
     return
   }
 
@@ -145,6 +145,7 @@ export async function command({
       globalPackages
     })
 
+    cli.info("Creating git tags...")
     if(isRepo && tag) {
       try {
         await git.addTag(`${gitConfig.tagPrefix}${gitConfig.tagPrefix !== '' ? '-' : ''}${pkg.json.name}@${pkg.version}`)
@@ -154,6 +155,7 @@ export async function command({
     }
   }
 
+  cli.info("Pushing changes...")
   if(isRepo) {
     try {
       await git.push()
