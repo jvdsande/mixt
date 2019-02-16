@@ -31,7 +31,7 @@ export class Git {
 
       try {
         const tag = (await this.raw([
-          'describe', '--tags'
+          'describe', '--tags', '--abbrev=0'
         ])).trim()
 
         return tag !== '' ? tag : undefined
