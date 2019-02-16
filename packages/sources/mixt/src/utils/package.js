@@ -21,7 +21,7 @@ export async function getLocalPackages (packagesDir) {
 }
 
 export async function getGlobalPackages(rootDir) {
-  const rootJson = getJson(resolve(rootDir, 'package.json'))
+  const rootJson = await getJson(resolve(rootDir, 'package.json'))
 
   return rootJson.dependencies
 }

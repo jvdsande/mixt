@@ -54,7 +54,7 @@ async function prepublishPackage({ pkg }) {
 }
 
 async function publishPackage({
-  pkg, packagesDir, rootDir, quietBuild, res, build, tag,
+  pkg, packagesDir, rootDir, quietBuild, resolve, build, tag,
   localPackages, globalPackages
 }) {
   const { json, version, cwd } = pkg
@@ -72,7 +72,7 @@ async function publishPackage({
     await buildPackage({ source: pkg.source, pkg, packagesDir, quietBuild })
   }
 
-  if(res) {
+  if(resolve) {
     await resolvePackage({
       pkg, packagesDir,
       localPackages,
