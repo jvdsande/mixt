@@ -165,6 +165,7 @@ export async function command({
       cli.error(err)
     }
   }
+  cli.info("Done!")
 }
 
 /** Command export */
