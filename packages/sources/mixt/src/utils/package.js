@@ -1,13 +1,28 @@
 import cli from 'cli'
 import fs from "fs"
-import { resolve } from "path"
+import path from "path"
 import { getJson, readDir } from './file'
 import { spawnCommand } from './process'
 
 export async function getLocalPackages (packagesDir) {
   const packages = await readDir(packagesDir)
 
-  const packagesJson = await Promise.all(packages.map(p => getJson(resolve(packagesDir, p, 'package.json')).catch(err => {})))
+  const packagesJson = []
+
+  await Promise.all(packages.map(async p => {
+    if(p.startsWith('@')) {
+      const scoped = await readDir(path.resolve(packagesDir, p))
+
+      const scopedJson = await Promise.all(scoped.map(async s => getJson(path.resolve(packagesDir, p, s, 'package.json')).catch(err => {})))
+
+      return packagesJson.push(...scopedJson)
+    }
+    try {
+      const json = await getJson(path.resolve(packagesDir, p, 'package.json'))
+
+      packagesJson.push(json)
+    } catch(err) {}
+  }))
 
   const modules = {}
 
@@ -21,20 +36,33 @@ export async function getLocalPackages (packagesDir) {
 }
 
 export async function getGlobalPackages(rootDir) {
-  const rootJson = await getJson(resolve(rootDir, 'package.json'))
+  const rootJson = await getJson(path.resolve(rootDir, 'package.json'))
 
   return rootJson.dependencies
 }
 
 export async function getPackages(sourceDir) {
-  const pkgFolders = (await readDir(sourceDir)).filter(pkg => {
-    return fs.lstatSync(resolve(sourceDir, pkg)).isDirectory() && fs.existsSync(resolve(sourceDir, pkg, 'package.json'))
+  const sourceDirChild = await readDir(sourceDir)
+  const pkgFolders = sourceDirChild.filter(pkg => {
+    return fs.lstatSync(path.resolve(sourceDir, pkg)).isDirectory() && fs.existsSync(path.resolve(sourceDir, pkg, 'package.json'))
   })
+
+  // Go through scoped packages
+  await Promise.all(sourceDirChild.filter(pkg => pkg.startsWith('@'))
+    .map(async scope => {
+      const scopeFolders = (await readDir(path.resolve(sourceDir, scope))).filter(pkg => {
+        return fs.lstatSync(path.resolve(sourceDir, pkg)).isDirectory() && fs.existsSync(path.resolve(sourceDir, pkg, 'package.json'))
+      })
+
+      pkgFolders.push(...scopeFolders.map(f => scope + '/' + f))
+    })
+  )
 
   return (await Promise.all(pkgFolders.map(async pkgFolder => {
     const json = await getPackageJson(sourceDir, pkgFolder)
+
     return {
-      cwd: resolve(sourceDir, pkgFolder),
+      cwd: path.resolve(sourceDir, pkgFolder),
       json
     }
   })))
@@ -54,9 +82,9 @@ export async function getPackagesBySource(packages, sourcesDir) {
 
 export async function getPackageJson(source, pkg) {
   if(pkg) {
-    return await getJson(resolve(source, `./${pkg}`, './package.json'))
+    return await getJson(path.resolve(source, `./${pkg}`, './package.json'))
   } else {
-    return await getJson(resolve(source, './package.json'))
+    return await getJson(path.resolve(source, './package.json'))
   }
 }
 
@@ -70,7 +98,7 @@ export function getSources(srcs, packagesDir, init) {
 
       return true
     })
-    .map(source => resolve(packagesDir, './' + source))
+    .map(source => path.resolve(packagesDir, './' + source))
     .filter(source => {
       if(!init && !fs.existsSync(source)) {
         cli.info('Source dir "' + source + '" could not be found. Ignoring...')

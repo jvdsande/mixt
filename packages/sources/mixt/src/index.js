@@ -1,3 +1,4 @@
+import path from 'path'
 import program from 'commander'
 
 import AddCommand from './commands/add'
@@ -10,6 +11,7 @@ import ResolveCommand from './commands/resolve'
 import RunCommand from './commands/run'
 import StatusCommand from './commands/status'
 import WatchCommand from './commands/watch'
+import { getJson } from './utils/file'
 
 InitCommand(program)
 AddCommand(program)
@@ -23,5 +25,11 @@ RunCommand(program)
 ExecCommand(program)
 
 export const run = async () => {
+  try {
+    const json = await getJson(path.resolve(process.mainModule.filename, "../../", "package.json"))
+    program.version(json.version)
+  } catch (err) {
+
+  }
   program.parse(process.argv)
 }
