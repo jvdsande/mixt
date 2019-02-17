@@ -70,7 +70,7 @@ export async function getPackages(sourceDir) {
 
 
 export async function getPackagesBySource(packages, sourcesDir) {
-  return await Promise.all(sourcesDir.map(async source => {
+  const packagesBySource = await Promise.all(sourcesDir.map(async source => {
     const srcPkgs = await getPackages(source)
 
     return {
@@ -78,6 +78,14 @@ export async function getPackagesBySource(packages, sourcesDir) {
       packages: srcPkgs.filter(pkg => !packages || !packages.length || (packages === pkg.json.name))
     }
   }))
+
+  const nb = packagesBySource.reduce((acc, src) => acc + src.packages.length, 0)
+
+  if(!nb) {
+    cli.fatal("Found 0 package for the given sources and packages name. Aborting.")
+  }
+
+  return packagesBySource
 }
 
 export async function getPackageJson(source, pkg) {
