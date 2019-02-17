@@ -36,7 +36,14 @@ export async function resolvePackage({
 
   const projectJson = path.resolve(projectDir, 'package.json')
 
-  const packageJson = await getJson(projectJson)
+  let packageJson
+
+  try {
+    packageJson = await getJson(projectJson)
+  } catch(err) {
+    cli.error(`Project ${pkg} could not be found. Did you build it first?`)
+    return
+  }
   packageJson.dependencies = packageJson.dependencies || {}
 
   cli.info('Checking package ' + projectDir)

@@ -70,12 +70,19 @@ export async function getPackages(sourceDir) {
 
 
 export async function getPackagesBySource(packages, sourcesDir) {
+  console.log({
+    packages,
+    sourcesDir
+  })
+
   const packagesBySource = await Promise.all(sourcesDir.map(async source => {
     const srcPkgs = await getPackages(source)
 
     return {
       source,
-      packages: srcPkgs.filter(pkg => !packages || !packages.length || (packages === pkg.json.name))
+      packages: srcPkgs.filter(pkg => {
+        return !packages || !packages.length || (packages.indexOf(pkg.json.name) > -1)
+      })
     }
   }))
 

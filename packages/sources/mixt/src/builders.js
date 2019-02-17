@@ -11,6 +11,8 @@ async function copyBuilder(cwd, pkg, packagesDir, silent) {
   const done = await copyCommand(cwd, pkg, packagesDir, silent)
 
   done && !silent && cli.info('Done !')
+
+  return done
 }
 
 async function mixtBuilder(cwd, pkg, packagesDir, silent) {
@@ -19,6 +21,8 @@ async function mixtBuilder(cwd, pkg, packagesDir, silent) {
   const done = await mixtCommand(cwd, pkg, packagesDir, silent)
 
   done && !silent && cli.info('Done!')
+
+  return done
 }
 
 async function pikaPackBuilder(cwd, pkg, packagesDir, silent) {
@@ -27,6 +31,8 @@ async function pikaPackBuilder(cwd, pkg, packagesDir, silent) {
   const done = await pikaPackCommand(cwd, pkg, packagesDir, silent)
 
   done && !silent && cli.info('Done!')
+
+  return done
 }
 
 

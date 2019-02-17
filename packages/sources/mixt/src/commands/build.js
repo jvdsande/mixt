@@ -32,7 +32,7 @@ export async function buildPackage({ source, pkg, packagesDir, quietBuild }) {
 
   const builder = await getBuilder(pkg.json)
 
-  await builder(pkg.cwd, pkg.json, packagesDir, quietBuild)
+  return await builder(pkg.cwd, pkg.json, packagesDir, quietBuild)
 }
 
 /** Command function **/
@@ -48,6 +48,7 @@ export async function command({
   const packagesBySource = await getPackagesBySource(packages, sourcesDir)
 
   let nbPackages = 0
+  let nbFailed = 0
 
   // Make a stub for all local packages
   for(const source of packagesBySource) {
@@ -60,8 +61,13 @@ export async function command({
     cli.info(`Found ${source.packages.length} package${source.packages.length > 1 ? 's' : ''} in ${source.source}`)
 
     for(const pkg of source.packages) {
-      await buildPackage({ source, pkg, packagesDir, quietBuild })
-      nbPackages += 1
+      pkg.built = await buildPackage({ source, pkg, packagesDir, quietBuild })
+
+      if(pkg.built) {
+        nbPackages += 1
+      } else {
+        nbFailed += 1
+      }
     }
   }
 
@@ -71,6 +77,10 @@ export async function command({
   const cents = Math.round((diff - (seconds * 1000)) / 10)
 
   cli.info(`Built ${nbPackages} package${nbPackages > 1 ? 's' : ''} in ${seconds}.${cents}s`)
+
+  if(nbFailed > 0) {
+    cli.info(`Failed building ${nbFailed} package${nbFailed > 1 ? 's' : ''}`)
+  }
 
   if(resolve) {
     await Resolve({

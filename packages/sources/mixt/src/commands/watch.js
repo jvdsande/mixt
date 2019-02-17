@@ -48,7 +48,7 @@ export async function command({
 /** Command export */
 export default function WatchCommand(program) {
   Command(program, {
-    name: 'watch [packages]',
+    name: 'watch [packages...]',
     options: [
       options.quietBuild,
     ],
