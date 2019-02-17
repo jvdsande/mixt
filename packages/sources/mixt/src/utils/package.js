@@ -70,11 +70,6 @@ export async function getPackages(sourceDir) {
 
 
 export async function getPackagesBySource(packages, sourcesDir) {
-  console.log({
-    packages,
-    sourcesDir
-  })
-
   const packagesBySource = await Promise.all(sourcesDir.map(async source => {
     const srcPkgs = await getPackages(source)
 
