@@ -59,6 +59,10 @@ async function publishPackage({
 }) {
   const { json, version, cwd } = pkg
 
+  // Get packages
+  const localPackages = await getLocalPackages(packagesDir)
+  const globalPackages = await getGlobalPackages(rootDir)
+
   // Update the package.json
   json.version = version
   await saveJson(path.resolve(cwd, 'package.json'), json)
@@ -99,10 +103,10 @@ export async function command({
   rootDir, packagesDir, sourcesDir,
   packages,
   quietBuild, build, tag, resolve,
-  git: gitConfig, cheap,
+  git: gitConfig, cheap, force,
 }) {
   let modifiedPackages = await getStatus({
-    rootDir, packagesDir, sourcesDir, packages,
+    rootDir, packagesDir, sourcesDir, packages, force,
   })
 
   const git = new Git(rootDir)
@@ -115,9 +119,6 @@ export async function command({
       cli.fatal(`Cannot publish from branch "${branch.current}", please checkout "${gitConfig.branch}" before publishing`)
     }
   }
-
-  const localPackages = await getLocalPackages(packagesDir)
-  const globalPackages = await getGlobalPackages(rootDir)
 
   for (const pkg of modifiedPackages) {
     pkg.version = await prepublishPackage({ pkg })
@@ -133,8 +134,6 @@ export async function command({
       quietBuild,
       resolve,
       build,
-      localPackages,
-      globalPackages,
       cheap,
     })
   }
@@ -183,6 +182,7 @@ export default function PublishCommand(program) {
       options.branch,
       options.prefix,
       options.cheap,
+      options.force,
     ],
     command,
   })

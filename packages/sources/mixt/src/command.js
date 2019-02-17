@@ -26,7 +26,8 @@ export const options = {
   branch: ['--branch [branch]', 'Specify the Git branch from which publishing is allowed. Defaults to "master"'],
   cheap:  ['--cheap', 'Whether to use the cheap resolve function. Defaults to false.'],
   source: ['--source [source]', 'Source folder to use (subdirectory of packages)'],
-  prefix: ['--prefix [prefix]', 'Append a custom prefix for generated Git tags']
+  prefix: ['--prefix [prefix]', 'Append a custom prefix for generated Git tags'],
+  force: ['--force', 'Whether to force publish packages that have not changed on Git']
 }
 
 
