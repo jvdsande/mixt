@@ -54,8 +54,7 @@ async function prepublishPackage({ pkg }) {
 }
 
 async function publishPackage({
-  pkg, packagesDir, rootDir, quietBuild, resolve, build, tag,
-  localPackages, globalPackages, cheap,
+  pkg, packagesDir, rootDir, quietBuild, resolve, build, tag, cheap,
 }) {
   const { json, version, cwd } = pkg
 
