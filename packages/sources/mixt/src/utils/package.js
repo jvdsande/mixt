@@ -75,7 +75,7 @@ export async function getPackagesBySource(packages, sourcesDir) {
 
     return {
       source,
-      packages: srcPkgs.filter(pkg => !packages || !packages.length || (packages.indexOf(pkg.json.name) > -1))
+      packages: srcPkgs.filter(pkg => !packages || !packages.length || (packages === pkg.json.name))
     }
   }))
 }

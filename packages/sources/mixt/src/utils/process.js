@@ -1,7 +1,7 @@
 import { exec, spawn } from 'child_process'
 import chokidar from 'chokidar'
 import cli from 'cli'
-import { resolve } from "path"
+import path, {resolve} from 'path'
 
 export async function spawnProcess(cmd, silent) {
   return new Promise(function (resolve) {
@@ -65,7 +65,14 @@ export async function spawnWatch(watcher, cwd, pkg, packagesDir, silent) {
 
       cli.info('Package ' + JSON.stringify(pkg.name) + ' has changed. Rebuilding...')
 
-      await createStub(packagesDir, pkg)
+      // Delete the build folder
+      await spawnCommand(
+        'rm',
+        ['-rf', path.resolve(packagesDir, `./${pkg.name}`)],
+        {},
+        silent
+      )
+      // Build
       await watcher(cwd, pkg, packagesDir, silent)
 
       cli.info('Package ' + JSON.stringify(pkg.name) + ' built.')
@@ -80,6 +87,15 @@ export async function spawnWatch(watcher, cwd, pkg, packagesDir, silent) {
   }
 
   cli.info('Building package ' + JSON.stringify(pkg.name) + '...')
+
+  // Delete the build folder
+  await spawnCommand(
+    'rm',
+    ['-rf', path.resolve(packagesDir, `./${pkg.name}`)],
+    {},
+    silent
+  )
+  // Build
   await watcher(cwd, pkg, packagesDir, silent)
   cli.info('Done!')
   chokidar.watch(cwd, {ignored: /(^|[\/\\])\../, persistent: true}).on('all', build);

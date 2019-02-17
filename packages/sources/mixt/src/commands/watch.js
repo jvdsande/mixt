@@ -26,9 +26,9 @@ async function watchPackage({source, pkg, packagesDir, quietBuild}) {
 
 /** Command function **/
 export async function command({
-                                rootDir, packagesDir, sourcesDir,
-                                packages, quietBuild
-                              }) {
+  rootDir, packagesDir, sourcesDir,
+  packages, quietBuild
+}) {
   const packagesBySource = await getPackagesBySource(packages, sourcesDir)
 
   // Make a stub for all local packages
