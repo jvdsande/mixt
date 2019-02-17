@@ -145,14 +145,14 @@ export async function command({
     await git.commit("[Release] " + modifiedPackages.map(pkg => pkg.json.name + '-' + pkg.version).join(','))
   }
 
-  for (const pkg of modifiedPackages) {
+  if (isRepo && tag) {
     cli.info("Creating git tags...")
-    if (isRepo && tag) {
-      try {
-        await git.addTag(`${gitConfig.tagPrefix}${gitConfig.tagPrefix !== '' ? '-' : ''}${pkg.json.name}@${pkg.version}`)
-      } catch (err) {
-        cli.error(`A tag with this version name already exists: ${pkg.json.name}@${pkg.version}. It has not been overwritten`)
-      }
+    for (const pkg of modifiedPackages) {
+        try {
+          await git.addTag(`${gitConfig.tagPrefix}${gitConfig.tagPrefix !== '' ? '-' : ''}${pkg.json.name}@${pkg.version}`)
+        } catch (err) {
+          cli.error(`A tag with this version name already exists: ${pkg.json.name}@${pkg.version}. It has not been overwritten`)
+        }
     }
   }
 
