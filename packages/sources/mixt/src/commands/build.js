@@ -27,7 +27,7 @@ export async function buildPackage({ source, pkg, packagesDir, quietBuild }) {
   if(buildScript) {
     cli.info('Build script found. Executing "npm run build"....')
 
-    await spawnCommand('npm', ['run build'], { cwd: pkg.cwd }, quietBuild)
+    await spawnCommand('npm', ['run', 'build'], { cwd: pkg.cwd }, quietBuild)
   }
 
   const builder = await getBuilder(pkg.json)
