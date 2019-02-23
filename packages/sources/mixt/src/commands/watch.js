@@ -15,7 +15,8 @@ async function watchPackage({source, pkg, packagesDir, quietBuild}) {
   const watcher = await getCommand(pkg.json)
 
   if (watchScript) {
-    await watcher(pkg.cwd, pkg.json, packagesDir, quietBuild)
+    // Proceed without waiting, as this command should not quit
+    watcher(pkg.cwd, pkg.json, packagesDir, quietBuild)
   } else {
     await spawnWatch(
       watcher,
