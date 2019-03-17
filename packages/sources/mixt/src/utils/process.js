@@ -39,6 +39,7 @@ export async function spawnCommand(cmd, args, params, silent) {
     child.on('exit', function (code) {
       if(code) {
         cli.error('Process exited with non-success exit code: ' + code)
+        reject(code)
       }
       resolve(!code);
     });
