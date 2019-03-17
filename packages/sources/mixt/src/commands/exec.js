@@ -1,5 +1,4 @@
 import cli from 'cli'
-import {resolve} from "path"
 import Command from '../command'
 
 import { getPackagesBySource } from '../utils/package'
@@ -8,7 +7,12 @@ import { spawnProcess } from '../utils/process'
 /** Private functions **/
 async function runCommand({ source, pkg, cmd }) {
   cli.info('Running command ' + JSON.stringify(cmd) + ' in package ' + JSON.stringify(pkg.json.name) + '...')
-  await spawnProcess(`cd "${pkg.cwd}" && ${cmd}`)
+
+  try {
+    await spawnProcess(`cd "${pkg.cwd}" && ${cmd}`)
+  } catch(err) {
+    cli.fatal("An error occurred while running command " + JSON.stringify(cmd))
+  }
 }
 
 /** Command function **/

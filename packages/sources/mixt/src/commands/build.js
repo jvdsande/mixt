@@ -37,13 +37,13 @@ export async function buildPackage({ source, pkg, packagesDir, quietBuild }) {
 
 /** Command function **/
 export async function command({
-  rootDir, packagesDir, sourcesDir,
+  rootDir, packagesDir, sourcesDir, allSourcesDir,
   quietBuild, resolve, packages,
   cheap,
 }) {
   const start = new Date()
 
-  await cleanPackagesDirectory(sourcesDir, packagesDir)
+  await cleanPackagesDirectory(allSourcesDir, packagesDir)
 
   const packagesBySource = await getPackagesBySource(packages, sourcesDir)
 

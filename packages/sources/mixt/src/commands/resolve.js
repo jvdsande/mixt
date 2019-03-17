@@ -42,7 +42,7 @@ export async function resolvePackage({
     packageJson = await getJson(projectJson)
   } catch(err) {
     cli.error(`Project ${pkg} could not be found. Did you build it first?`)
-    return
+    return false
   }
   packageJson.dependencies = packageJson.dependencies || {}
 
@@ -71,7 +71,11 @@ export async function resolvePackage({
 
   if(!missing) {
     cli.ok('Project up to date')
+
+    return true
   }
+
+  return false
 }
 
 

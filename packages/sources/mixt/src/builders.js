@@ -39,39 +39,59 @@ async function pikaPackBuilder(cwd, pkg, packagesDir, silent) {
 /* Commands */
 
 async function copyCommand(cwd, pkg, packagesDir, silent) {
-  return await spawnCommand(
-    'cp',
-    ['-rv', cwd, path.resolve(packagesDir, pkg.name)],
-    {},
-    silent,
-  )
+  try {
+    return await spawnCommand(
+      'cp',
+      ['-rv', cwd, path.resolve(packagesDir, pkg.name)],
+      {},
+      silent,
+    )
+  } catch(err) {
+    cli.error("An error occurred while building package " + JSON.stringify(pkg.name) + ": ", err)
+    return false
+  }
 }
 
 async function mixtCommand(cwd, pkg, packagesDir, silent) {
-  return await spawnCommand(
-    'npm',
-    ['run', 'mixt'],
-    { cwd },
-    silent,
-  )
+  try {
+    return await spawnCommand(
+      'npm',
+      ['run', 'mixt'],
+      {cwd},
+      silent,
+    )
+  } catch(err) {
+    cli.error("An error occurred while building package " + JSON.stringify(pkg.name) + ": ", err)
+    return false
+  }
 }
 
 async function pikaPackCommand(cwd, pkg, packagesDir, silent) {
-  return await spawnCommand(
-    'pack',
-    [...`build --out=../../node_modules/${pkg.name}`.split(' ')],
-    { cwd },
-    silent,
-  )
+  try {
+    return await spawnCommand(
+      'pack',
+      [...`build --out=../../node_modules/${pkg.name}`.split(' ')],
+      {cwd},
+      silent,
+    )
+  } catch(err) {
+    cli.error("An error occurred while building package " + JSON.stringify(pkg.name) + ": ", err)
+    return false
+  }
 }
 
 async function watchCommand(cwd, pkg, packagesDir, silent) {
-  return await spawnCommand(
-    'npm',
-    [...`run watch`.split(' ')],
-    { cwd },
-    silent,
-  )
+  try {
+    return await spawnCommand(
+      'npm',
+      [...`run watch`.split(' ')],
+      {cwd},
+      silent,
+    )
+  } catch(err) {
+    cli.info("A problem occurred while watching package " + JSON.stringify(pkg.name))
+    return false;
+  }
 }
 
 

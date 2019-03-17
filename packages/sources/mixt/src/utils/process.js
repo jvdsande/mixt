@@ -4,7 +4,7 @@ import cli from 'cli'
 import path, {resolve} from 'path'
 
 export async function spawnProcess(cmd, silent) {
-  return new Promise(function (resolve) {
+  return new Promise(function (resolve, reject) {
     const child = exec(cmd.trim());
 
     if(!silent) {
@@ -15,7 +15,7 @@ export async function spawnProcess(cmd, silent) {
 
     child.on('error', function (data) {
       cli.error('Error while running command: ' + data)
-      resolve(false);
+      reject(data);
     });
 
     child.on('exit', function () {
@@ -33,7 +33,7 @@ export async function spawnCommand(cmd, args, params, silent) {
 
     child.on('error', function (data) {
       cli.error('Error while running command: ' + data)
-      resolve(false);
+      reject(data);
     });
 
     child.on('exit', function () {

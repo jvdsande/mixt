@@ -32,11 +32,11 @@ async function prepublishPackage({ pkg }) {
     type: 'list',
     message: `Select the new version for "${json.name}" (current version: ${json.version})`,
     default: 0,
-    choices: [nextPatch, nextMinor, nextMajor, 'custom', betaPatch, betaMinor, betaMajor, 'Do not release'],
+    choices: [nextPatch, nextMinor, nextMajor, 'Custom', betaPatch, betaMinor, betaMajor, 'Do not release'],
     pageSize: 10,
   }])
 
-  while(nextVersion.version === 'custom') {
+  while(nextVersion.version === 'Custom') {
     const customVersion = await cliAsk.prompt([{
       name: 'version',
       type: 'string',
@@ -53,47 +53,45 @@ async function prepublishPackage({ pkg }) {
   return nextVersion.version
 }
 
-async function publishPackage({
-  pkg, packagesDir, rootDir, quietBuild, resolve, build, tag, cheap,
-}) {
-  const { json, version, cwd } = pkg
-
-  // Get packages
-  const localPackages = await getLocalPackages(packagesDir)
-  const globalPackages = await getGlobalPackages(rootDir)
-
+async function setPackageVersion({ json, packagesDir, version, cwd }) {
   // Update the package.json
   json.version = version
   await saveJson(path.resolve(cwd, 'package.json'), json)
 
-  // If we don't build, manually update the built package.json
-  if(!build) {
-    const builtJson = await getPackageJson(packagesDir, json.name)
-    builtJson.version = version
-    await saveJson(path.resolve(packagesDir, json.name, 'package.json'), builtJson)
-  } else {
-    await buildPackage({ source: pkg.source, pkg, packagesDir, quietBuild })
-  }
+  // Update the built package.json
+  const builtJson = await getPackageJson(packagesDir, json.name)
+  builtJson.version = version
+  await saveJson(path.resolve(packagesDir, json.name, 'package.json'), builtJson)
+}
 
-  if(resolve) {
-    await resolvePackage({
-      cheap,
-      pkg: pkg.json.name, packagesDir,
-      localPackages,
-      globalPackages,
-    })
-  }
+async function publishPackage({
+  pkg, packagesDir,
+}) {
+  const { json, version, cwd } = pkg
 
+  // Update the version
+  await setPackageVersion({ json, packagesDir, version, cwd })
+
+  // Check for private
   if(pkg.json.private) {
     cli.info(`Package "${pkg.json.name}" is private. Skipping publish step.`)
-    return
+    return true
   }
 
-  cli.info(`Publishing package "${pkg.json.name}" version ${pkg.version}...`)
+  try {
+    // Publish
+    cli.info(`Publishing package "${pkg.json.name}" version ${pkg.version}...`)
 
-  await spawnCommand('npm', ['publish'], { cwd: path.resolve(packagesDir, pkg.json.name)})
+    await spawnCommand('npm', ['publish'], {cwd: path.resolve(packagesDir, pkg.json.name)})
 
-  cli.info(`"${pkg.json.name}" published!`)
+    cli.info(`"${pkg.json.name}" published!`)
+
+    return true
+  } catch(err) {
+    cli.error(`Error while publishing package "${pkg.json.name}": `, err)
+
+    return false
+  }
 }
 
 
@@ -104,6 +102,9 @@ export async function command({
   quietBuild, build, tag, resolve,
   git: gitConfig, cheap, force,
 }) {
+  const localPackages = await getLocalPackages(packagesDir)
+  const globalPackages = await getGlobalPackages(rootDir)
+
   let modifiedPackages = await getStatus({
     rootDir, packagesDir, sourcesDir, packages, force,
   })
@@ -119,22 +120,67 @@ export async function command({
     }
   }
 
+  // Find new version
   for (const pkg of modifiedPackages) {
+    pkg.oldVersion = pkg.json.version
     pkg.version = await prepublishPackage({ pkg })
   }
 
   modifiedPackages = modifiedPackages.filter(pkg => pkg.version !== 'Do not release')
 
+  async function revert() {
+    for(const pkg of modifiedPackages) {
+      await setPackageVersion({
+        json: pkg.json,
+        cwd: pkg.cwd,
+        packagesDir,
+        version: pkg.oldVersion,
+      })
+    }
+  }
+
+  let success = true
+
+  // Build packages (if not --noBuild)
+  if(build) {
+    for (const pkg of modifiedPackages) {
+      success = success && await buildPackage({ source: pkg.source, pkg, packagesDir, quietBuild })
+
+      if(!success) {
+        cli.error("An error occurred while building. Aborting publish...")
+        return revert()
+      }
+    }
+  }
+
+  // Resolve packages (if not --noResolve)
+  if(resolve) {
+    for(const pkg of modifiedPackages) {
+      success = success && await resolvePackage({
+        cheap,
+        pkg: pkg.json.name, packagesDir,
+        localPackages,
+        globalPackages,
+      })
+
+      if(!success) {
+        cli.fatal("An error occurred while resolving. Aborting publish...")
+        return revert()
+      }
+    }
+  }
+
+  // Publish packages
   for (const pkg of modifiedPackages) {
-    await publishPackage({
+    success = success && await publishPackage({
       pkg,
       packagesDir,
-      rootDir,
-      quietBuild,
-      resolve,
-      build,
-      cheap,
     })
+
+    if(!success) {
+      cli.fatal("An error occurred while publishing. Aborting publish...")
+      return revert()
+    }
   }
 
   // Commit to git
