@@ -173,7 +173,7 @@ export async function command({
       })
 
       if(!success) {
-        cli.fatal("An error occurred while resolving. Aborting publish...")
+        cli.error("An error occurred while resolving. Aborting publish...")
         return revert()
       }
     }
@@ -187,7 +187,7 @@ export async function command({
     })
 
     if(!success) {
-      cli.fatal("An error occurred while publishing. Aborting publish...")
+      cli.error("An error occurred while publishing. Aborting publish...")
       return revert()
     }
   }
