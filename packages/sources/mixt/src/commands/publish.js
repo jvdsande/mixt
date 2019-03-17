@@ -59,9 +59,13 @@ async function setPackageVersion({ json, packagesDir, version, cwd }) {
   await saveJson(path.resolve(cwd, 'package.json'), json)
 
   // Update the built package.json
-  const builtJson = await getPackageJson(packagesDir, json.name)
-  builtJson.version = version
-  await saveJson(path.resolve(packagesDir, json.name, 'package.json'), builtJson)
+  try {
+    const builtJson = await getPackageJson(packagesDir, json.name)
+    builtJson.version = version
+    await saveJson(path.resolve(packagesDir, json.name, 'package.json'), builtJson)
+  } catch(err) {
+
+  }
 }
 
 async function publishPackage({
