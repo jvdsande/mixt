@@ -66,6 +66,8 @@ async function setPackageVersion({ json, packagesDir, version, cwd }) {
   } catch(err) {
 
   }
+
+  return true
 }
 
 async function publishPackage({

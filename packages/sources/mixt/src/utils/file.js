@@ -1,4 +1,5 @@
 import fs from "fs"
+import cli from 'cli'
 
 function promisify(func) {
   return (...args) => new Promise((resolve, reject) => func(...args, (err, res) => err ? reject(err) : resolve(res)))
@@ -14,5 +15,11 @@ export async function getJson(file) {
 }
 
 export async function saveJson(file, json) {
-  return await writeFile(file, JSON.stringify(json, null, 2) + '\n', 'utf-8')
+  try {
+    await writeFile(file, JSON.stringify(json, null, 2) + '\n', 'utf-8')
+  } catch(err) {
+    cli.error('Error while writing file "' + file + '": ', err)
+  }
+
+  return true;
 }
