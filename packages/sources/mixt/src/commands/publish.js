@@ -132,6 +132,11 @@ export async function command({
 
   modifiedPackages = modifiedPackages.filter(pkg => pkg.version !== 'Do not release')
 
+  if(!modifiedPackages.length) {
+    cli.info("No packages to publish, exiting...")
+    return
+  }
+
   async function revert() {
     for(const pkg of modifiedPackages) {
       await setPackageVersion({
