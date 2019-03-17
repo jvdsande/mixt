@@ -4,10 +4,16 @@ import path from "path"
 import Command, { options } from '../command'
 import { getBuilder } from '../builders'
 
-import {cleanPackagesDirectory, getPackageJson, getPackagesBySource} from '../utils/package'
+import {
+  cleanPackagesDirectory,
+  getGlobalPackages,
+  getLocalPackages,
+  getPackageJson,
+  getPackagesBySource
+} from '../utils/package'
 import { createStub, spawnCommand } from '../utils/process'
 
-import { command as Resolve } from './resolve'
+import {command as Resolve, resolvePackage} from './resolve'
 
 /** Private functions **/
 export async function buildPackage({ source, pkg, packagesDir, quietBuild }) {
@@ -46,9 +52,13 @@ export async function command({
   await cleanPackagesDirectory(allSourcesDir, packagesDir)
 
   const packagesBySource = await getPackagesBySource(packages, sourcesDir)
+  const localPackages = await getLocalPackages(packagesDir)
+  const globalPackages = await getGlobalPackages(rootDir)
 
   let nbPackages = 0
   let nbFailed = 0
+
+  const successPackages = []
 
   // Make a stub for all local packages
   for(const source of packagesBySource) {
@@ -65,6 +75,7 @@ export async function command({
 
       if(pkg.built) {
         nbPackages += 1
+        successPackages.push(pkg.json.name)
       } else {
         nbFailed += 1
       }
@@ -83,9 +94,15 @@ export async function command({
   }
 
   if(resolve) {
-    await Resolve({
-      packages, packagesDir, rootDir, sourcesDir, cheap,
-    })
+    for(const pkg of successPackages) {
+      await resolvePackage({
+        pkg,
+        packagesDir,
+        localPackages,
+        globalPackages,
+        cheap
+      })
+    }
   }
 }
 

@@ -88,7 +88,7 @@ export async function command({
 
   const pkgs = packages && packages.length ? packages : (await getPackages(packagesDir)).map(p => p.json.name)
 
-  cli.info('Checking ' + pkgs.length + ' packages')
+  cli.info('Checking ' + pkgs.length + ' package' + (pkgs.length > 1 ? 's' : ''))
 
   const localPackages = await getLocalPackages(packagesDir)
   const globalPackages = await getGlobalPackages(rootDir)

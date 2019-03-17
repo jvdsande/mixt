@@ -27,7 +27,7 @@ export async function spawnProcess(cmd, silent) {
 export async function spawnCommand(cmd, args, params, silent) {
   return new Promise(function (resolve, reject) {
     const child = spawn(cmd, args, {
-      stdio: !silent ? 'inherit' : undefined,
+      stdio: !silent ? 'inherit' : 'ignore',
       ...params,
     });
 
@@ -36,8 +36,11 @@ export async function spawnCommand(cmd, args, params, silent) {
       reject(data);
     });
 
-    child.on('exit', function () {
-      resolve(true);
+    child.on('exit', function (code) {
+      if(code) {
+        cli.error('Process exited with non-success exit code: ' + code)
+      }
+      resolve(!code);
     });
   });
 }
