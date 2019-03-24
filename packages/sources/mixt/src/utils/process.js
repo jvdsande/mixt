@@ -30,6 +30,7 @@ export async function spawnCommand(cmd, args, params, silent) {
   return new Promise(function (resolve, reject) {
     const child = spawn(cmd, args, {
       stdio: !silent ? 'inherit' : 'ignore',
+      shell: process.platform == 'win32',
       ...params,
     });
 

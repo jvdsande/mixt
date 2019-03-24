@@ -27,7 +27,7 @@ const gatsbyBuilder = {
       let success = true
 
       success = success && await process.spawnCommand('gatsby', args, { cwd })
-      success = success && await process.spawnCommand('cp', ['-rf', 'public', path.resolve(packagesDir, pkg.name)], { cwd })
+      success = success && await file.cp(path.resolve(cwd, 'public'))
 
       const publicJson = {
         name: pkg.name,
