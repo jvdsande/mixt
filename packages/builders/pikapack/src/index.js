@@ -1,6 +1,8 @@
 import cli from 'cli'
 
 const pikaPackBuilder = {
+  name: 'mixt-builder-pika-pack',
+
   configure() {
     return ({
       builder: 'pika-pack',

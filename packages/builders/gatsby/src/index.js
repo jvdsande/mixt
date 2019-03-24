@@ -2,6 +2,8 @@ import cli from 'cli'
 import path from 'path'
 
 const gatsbyBuilder = {
+  name: 'mixt-builder-gatsby',
+
   configure() {
     return ({
       builder: {

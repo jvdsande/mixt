@@ -34,8 +34,8 @@
   "mixt": {
     "packages": "packages",
     "sources": [
-      "sources",
       "builders",
+      "sources",
       "samples"
     ]
   }

@@ -147,7 +147,7 @@ export async function getBuilder(json) {
 
   if(builder) {
     if(!builder.build) {
-      cli.fatal(`"${builderName}" does not expose a 'build' function. Please use a valid Mixt builder.`)
+      cli.fatal(`"${builder.name}" does not expose a 'build' function. Please use a valid Mixt builder.`)
     }
 
     return (cwd, pkg, packagesDir, silent) => builder.build({ cwd, pkg, packagesDir, silent, utils: { process, file }, options: json.mixt.builder.options })

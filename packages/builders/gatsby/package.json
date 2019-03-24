@@ -3,9 +3,6 @@
   "version": "1.0.0",
   "description": "Gatsby builder for Mixt",
   "main": "index.js",
-  "mixt": {
-    "builder": "pika-pack"
-  },
   "@pika/pack": {
     "pipeline": [
       [
