@@ -13,7 +13,7 @@ export async function getMixtJson(source) {
 
 export async function getConfig(cmd, loadConfig) {
   const root      = cmd.root || './'
-  const rootDir   = path.resolve(process.env.PWD, root)
+  const rootDir   = path.resolve(process.cwd(), root)
 
   const config    = loadConfig ? await getMixtJson(rootDir) : {}
   const json      = loadConfig ? ((await getPackageJson(rootDir)).mixt || {}) : {}

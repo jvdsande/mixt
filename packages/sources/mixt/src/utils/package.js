@@ -3,9 +3,11 @@ import fs from "fs"
 import path from "path"
 import rmrf from 'rmrf'
 
-import { getJson, readDir } from './file'
+import { getJson, readDir, mkdir } from './file'
 
 export async function getLocalPackages (packagesDir) {
+  await mkdir(packagesDir, { recursive: true })
+
   const packages = await readDir(packagesDir)
 
   const packagesJson = []
@@ -43,7 +45,14 @@ export async function getGlobalPackages(rootDir) {
 }
 
 export async function getPackages(sourceDir) {
-  const sourceDirChild = await readDir(sourceDir)
+  let sourceDirChild
+  try {
+    sourceDirChild = await readDir(sourceDir)
+  } catch(err) {
+    cli.error('Error while reading directory "' + sourceDir + '"')
+    cli.fatal(err)
+  }
+
   const pkgFolders = sourceDirChild.filter(pkg => {
     return fs.lstatSync(path.resolve(sourceDir, pkg)).isDirectory() && fs.existsSync(path.resolve(sourceDir, pkg, 'package.json'))
   })
