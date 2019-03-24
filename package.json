@@ -1,7 +1,7 @@
 {
   "name": "mixt-main",
   "version": "1.0.0",
-  "description": "Test of a project structure using Mixt and Pika-Pack",
+  "description": "Main repository for the Mixt packager",
   "main": "index.js",
   "scripts": {
     "ln": "rm node_modules/.bin/mixt && ln -s `pwd`/packages/node_modules/mixt/dist-node/index.bin.js node_modules/.bin/mixt",
