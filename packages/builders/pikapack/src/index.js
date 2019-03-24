@@ -11,6 +11,16 @@ const pikaPackBuilder = {
 
   async command({cwd, pkg, packagesDir, silent, utils: { process }}) {
     try {
+      // Check if @pika/pack is installed globally
+      try {
+        await process.spawnProcess('pika', true)
+      } catch(err) {
+        cli.error("@pika/pack needs to be installed globally in order to use this builder.")
+        cli.error("Please run `npm i -g @pika/pack` and try again")
+
+        return false
+      }
+
       return await process.spawnCommand(
         'pack',
         [...`build --out=../../node_modules/${pkg.name}`.split(' ')],

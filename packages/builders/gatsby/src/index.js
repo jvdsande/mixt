@@ -19,6 +19,16 @@ const gatsbyBuilder = {
 
   async command({cwd, pkg, packagesDir, silent, utils: { process, file }, options}) {
     try {
+      // Check if Gatsby is installed globally
+      try {
+        await process.spawnProcess('gatsby', true)
+      } catch(err) {
+        cli.error("gatsby needs to be installed globally in order to use this builder.")
+        cli.error("Please run `npm i -g gatsby` and try again")
+
+        return false
+      }
+
       const args = ['build']
       if(options && options.usePrefix) {
         args.push('--prefix-paths')
@@ -27,7 +37,11 @@ const gatsbyBuilder = {
       let success = true
 
       success = success && await process.spawnCommand('gatsby', args, { cwd })
-      success = success && await file.cp(path.resolve(cwd, 'public'))
+      try {
+        await file.cp(path.resolve(cwd, 'public'), path.resolve(packagesDir, pkg.name))
+      } catch(err) {
+        return false
+      }
 
       const publicJson = {
         name: pkg.name,
@@ -53,6 +67,16 @@ const gatsbyBuilder = {
 
   async watch({cwd, pkg, packagesDir, silent, utils: { process, file }, options}) {
     try {
+      // Check if @pika/pack is installed globally
+      try {
+        await process.spawnProcess('pika', true)
+      } catch(err) {
+        cli.error("@pika/pack needs to be installed globally in order to use this builder.")
+        cli.error("Please run `npm i -g @pika/pack` and try again")
+
+        return false
+      }
+
       const args = ['develop']
       if(options && options.usePrefix) {
         args.push('--prefix-paths')
