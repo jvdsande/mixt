@@ -1,6 +1,6 @@
 {
   "name": "mixt-builder-pika-pack",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Pika Pack builder for Mixt",
   "main": "index.js",
   "@pika/pack": {
