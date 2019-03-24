@@ -172,6 +172,7 @@ export async function command({
         pkg: pkg.json.name, packagesDir,
         localPackages,
         globalPackages,
+        resolver: pkg.json && pkg.json.mixt && pkg.json.mixt.resolver
       })
 
       if(!success) {

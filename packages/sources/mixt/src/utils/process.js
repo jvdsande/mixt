@@ -1,7 +1,9 @@
 import { exec, spawn } from 'child_process'
 import chokidar from 'chokidar'
 import cli from 'cli'
-import path, {resolve} from 'path'
+import path from 'path'
+import rmrf from 'rmrf'
+import {mkdir, touch} from './file'
 
 export async function spawnProcess(cmd, silent) {
   return new Promise(function (resolve, reject) {
@@ -70,12 +72,8 @@ export async function spawnWatch(watcher, cwd, pkg, packagesDir, silent) {
       cli.info('Package ' + JSON.stringify(pkg.name) + ' has changed. Rebuilding...')
 
       // Delete the build folder
-      await spawnCommand(
-        'rm',
-        ['-rf', path.resolve(packagesDir, `./${pkg.name}`)],
-        {},
-        silent
-      )
+      await rmrf(path.resolve(packagesDir, `./${pkg.name}`))
+
       // Build
       await watcher(cwd, pkg, packagesDir, silent)
 
@@ -93,12 +91,8 @@ export async function spawnWatch(watcher, cwd, pkg, packagesDir, silent) {
   cli.info('Building package ' + JSON.stringify(pkg.name) + '...')
 
   // Delete the build folder
-  await spawnCommand(
-    'rm',
-    ['-rf', path.resolve(packagesDir, `./${pkg.name}`)],
-    {},
-    silent
-  )
+  await rmrf(path.resolve(packagesDir, `./${pkg.name}`))
+
   // Build
   await watcher(cwd, pkg, packagesDir, silent)
   cli.info('Done!')
@@ -106,16 +100,9 @@ export async function spawnWatch(watcher, cwd, pkg, packagesDir, silent) {
 }
 
 export async function createStub(packagesDir, pkg) {
-  await spawnCommand(
-    'rm',
-    ['-rf', resolve(packagesDir, `./${pkg.name}`)]
-  )
-  await spawnCommand(
-    'mkdir',
-    ['-p', resolve(packagesDir, `./${pkg.name}`)]
-  )
-  await spawnCommand(
-    'touch',
-    [resolve(packagesDir, `./${pkg.name}`, './index.js')]
-  )
+  await rmrf(path.resolve(packagesDir, `./${pkg.name}`))
+
+  await mkdir(path.resolve(packagesDir, `./${pkg.name}`), { recursive: true })
+
+  await touch(path.resolve(packagesDir, `./${pkg.name}`, './index.js'))
 }

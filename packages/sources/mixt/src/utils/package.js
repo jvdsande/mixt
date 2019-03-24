@@ -1,8 +1,9 @@
 import cli from 'cli'
 import fs from "fs"
 import path from "path"
+import rmrf from 'rmrf'
+
 import { getJson, readDir } from './file'
-import { spawnCommand } from './process'
 
 export async function getLocalPackages (packagesDir) {
   const packages = await readDir(packagesDir)
@@ -143,6 +144,6 @@ export async function cleanPackagesDirectory(sourcesDir, packagesDir) {
 
   await Promise.all(expiredPackages.map(pkg => {
     cli.info('Cleaning package ' + JSON.stringify(pkg))
-    return spawnCommand('rm', ['-rf', pkg], { cwd: packagesDir }, true)
+    return rmrf(path.resolve(packagesDir, pkg))
   }))
 }

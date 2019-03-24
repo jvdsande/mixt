@@ -1,7 +1,7 @@
 import path from 'path'
 
 import Command, { options } from '../command'
-import {getJson, saveJson} from '../utils/file'
+import {getJson, mkdir, saveJson} from '../utils/file'
 
 import { spawnCommand } from '../utils/process'
 
@@ -10,11 +10,11 @@ export async function command({
   rootDir, packagesDir, sourcesDir, config,
 }) {
   // Create the packages directory
-  await spawnCommand('mkdir', ['-p', packagesDir], {}, true)
+  await mkdir(packagesDir, { recursive: true })
 
   // Create all the sources directories
   for(const source of sourcesDir) {
-    await spawnCommand('mkdir', ['-p', source], { cwd: rootDir }, true)
+    await mkdir(path.resolve(rootDir, source), { recursive: true })
   }
 
   // Initialize the NPM package

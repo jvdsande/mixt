@@ -5,7 +5,13 @@ import path from 'path'
 import Command, { options } from '../command'
 
 import {getJson, saveJson} from '../utils/file'
-import {cleanPackagesDirectory, getGlobalPackages, getLocalPackages, getPackages} from '../utils/package'
+import {
+  cleanPackagesDirectory,
+  getGlobalPackages,
+  getLocalPackages,
+  getPackages,
+  getPackagesBySource
+} from '../utils/package'
 
 /** Private functions */
 async function fullResolve({ projectDir }) {
@@ -31,7 +37,14 @@ export async function resolvePackage({
   localPackages,
   globalPackages,
   cheap,
+  resolver,
 }) {
+  if(resolver === "none") {
+    cli.ok('Project up to date')
+
+    return true
+  }
+
   const projectDir = pkg.startsWith('/') ? pkg : path.resolve(packagesDir, pkg)
 
   const projectJson = path.resolve(projectDir, 'package.json')
@@ -49,7 +62,13 @@ export async function resolvePackage({
   cli.info('Checking package ' + projectDir)
 
   // Check the dependencies of the provided package
-  const using = cheap ? await cheapResolve({ packageJson }) : await fullResolve({ projectDir })
+  let using
+
+  if(cheap || resolver === "cheap") {
+    using = await cheapResolve({ packageJson })
+  } else {
+    using = await fullResolve({ projectDir })
+  }
 
   let missing = false
 
@@ -92,14 +111,26 @@ export async function command({
 
   const localPackages = await getLocalPackages(packagesDir)
   const globalPackages = await getGlobalPackages(rootDir)
+  const packagesBySource = await getPackagesBySource(pkgs, sourcesDir)
 
   for(const pkg of pkgs) {
+    let json = null;
+
+    packagesBySource.forEach(source => {
+      source.packages.forEach(p => {
+        if(p.json.name === pkg) {
+          json = p.json
+        }
+      })
+    })
+
     await resolvePackage({
       pkg,
       packagesDir,
       localPackages,
       globalPackages,
       cheap,
+      resolver: json && json.mixt && json.mixt.resolver
     })
   }
 }

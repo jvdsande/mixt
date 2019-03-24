@@ -12,6 +12,7 @@ import RunCommand from './commands/run'
 import StatusCommand from './commands/status'
 import WatchCommand from './commands/watch'
 import { getJson } from './utils/file'
+export { spawnCommand } from './utils/process'
 
 InitCommand(program)
 AddCommand(program)

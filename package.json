@@ -25,6 +25,8 @@
     "commander": "^2.19.0",
     "depcheck": "^0.7.1",
     "inquirer": "^6.2.2",
+    "ncp": "^2.0.0",
+    "rmrf": "^2.0.0",
     "semver": "^5.6.0",
     "simple-git": "^1.107.0",
     "typescript": "^3.3.3"
@@ -32,7 +34,9 @@
   "mixt": {
     "packages": "packages",
     "sources": [
-      "sources"
+      "sources",
+      "builders",
+      "samples"
     ]
   }
 }

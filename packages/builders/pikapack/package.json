@@ -1,0 +1,21 @@
+{
+  "name": "mixt-builder-pika-pack",
+  "version": "1.0.0",
+  "description": "Pika Pack builder for Mixt",
+  "main": "index.js",
+  "@pika/pack": {
+    "pipeline": [
+      [
+        "@pika/plugin-standard-pkg"
+      ],
+      [
+        "@pika/plugin-build-node"
+      ]
+    ]
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jérémie van der Sande <jeremie.vandersande@gmail.com>",
+  "license": "ISC"
+}

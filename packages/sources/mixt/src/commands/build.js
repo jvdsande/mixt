@@ -1,5 +1,6 @@
 import cli from 'cli'
 import path from "path"
+import rmrf from 'rmrf'
 
 import Command, { options } from '../command'
 import { getBuilder } from '../builders'
@@ -8,24 +9,18 @@ import {
   cleanPackagesDirectory,
   getGlobalPackages,
   getLocalPackages,
-  getPackageJson,
   getPackagesBySource
 } from '../utils/package'
 import { createStub, spawnCommand } from '../utils/process'
 
-import {command as Resolve, resolvePackage} from './resolve'
+import {resolvePackage} from './resolve'
 
 /** Private functions **/
 export async function buildPackage({ source, pkg, packagesDir, quietBuild }) {
   cli.info('Building ' + JSON.stringify(pkg.json.name))
 
   // Delete the build folder
-  await spawnCommand(
-    'rm',
-    ['-rf', path.resolve(packagesDir, `./${pkg.json.name}`)],
-    {},
-    quietBuild
-  )
+  await rmrf(path.resolve(packagesDir, `./${pkg.json.name}`))
 
   // Check if a "build" script is present
   const buildScript = !!pkg.json.scripts && !!pkg.json.scripts.build
@@ -75,7 +70,7 @@ export async function command({
 
       if(pkg.built) {
         nbPackages += 1
-        successPackages.push(pkg.json.name)
+        successPackages.push(pkg)
       } else {
         nbFailed += 1
       }
@@ -96,11 +91,12 @@ export async function command({
   if(resolve) {
     for(const pkg of successPackages) {
       await resolvePackage({
-        pkg,
+        pkg: pkg.json.name,
         packagesDir,
         localPackages,
         globalPackages,
-        cheap
+        cheap,
+        resolver: pkg.json && pkg.json.mixt && pkg.json.mixt.resolver
       })
     }
   }

@@ -1,8 +1,9 @@
 import cli from 'cli'
 
-import Command from '../command'
+import rmrf from 'rmrf'
 
-import { spawnCommand } from '../utils/process'
+import Command from '../command'
+import {mkdir} from '../utils/file'
 
 /** Private functions **/
 
@@ -12,8 +13,8 @@ export async function command({
 }) {
   cli.info("Cleaning " + JSON.stringify(packagesDir) + "...")
 
-  await spawnCommand('rm', ['-rf', packagesDir], {}, true)
-  await spawnCommand('mkdir', [packagesDir], {}, true)
+  await rmrf(packagesDir)
+  await mkdir(packagesDir, { recursive: true })
 }
 
 /** Command export */

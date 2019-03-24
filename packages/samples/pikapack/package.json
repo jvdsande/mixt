@@ -1,0 +1,22 @@
+{
+  "name": "mixt-sample-pika-pack",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sample app built with Pika-pack builder",
+  "main": "index.js",
+  "mixt": {
+    "builder": "pika-pack"
+  },
+  "@pika/pack": {
+    "pipeline": [
+      [
+        "@pika/plugin-standard-pkg"
+      ],
+      [
+        "@pika/plugin-build-node"
+      ]
+    ]
+  },
+  "author": "Jérémie van der Sande",
+  "license": "ISC"
+}
