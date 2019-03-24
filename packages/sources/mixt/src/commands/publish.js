@@ -30,7 +30,7 @@ async function prepublishPackage({ pkg }) {
   let betaMinor = semver.inc(version, 'preminor', 'alpha')
   let betaPatch = semver.inc(version, 'prepatch', 'alpha')
 
-  if(prerelease.length) {
+  if(prerelease && prerelease.length) {
     const patch = semver.patch(version)
     const minor = semver.minor(version)
     const major = semver.major(version)
