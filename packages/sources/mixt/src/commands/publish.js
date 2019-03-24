@@ -20,17 +20,42 @@ async function prepublishPackage({ pkg }) {
 
   const version = json.version || '0.0.0'
 
+  // Check if the current version is a prerelease
+  const prerelease = semver.prerelease(version)
+
   const nextMajor = semver.inc(version, 'major')
   const nextMinor = semver.inc(version, 'minor')
   const nextPatch = semver.inc(version, 'patch')
-  const betaMajor = semver.inc(version, 'premajor', 'alpha')
-  const betaMinor = semver.inc(version, 'preminor', 'alpha')
-  const betaPatch = semver.inc(version, 'prepatch', 'alpha')
+  let betaMajor = semver.inc(version, 'premajor', 'alpha')
+  let betaMinor = semver.inc(version, 'preminor', 'alpha')
+  let betaPatch = semver.inc(version, 'prepatch', 'alpha')
+
+  if(prerelease.length) {
+    const patch = semver.patch(version)
+    const minor = semver.minor(version)
+    const major = semver.major(version)
+
+    const wasNotPatched = Number(patch) === 0
+    const wasNotMinored = Number(minor) === 0
+
+    // Only update the prerelease of patch
+    betaPatch = major + '.' + minor + '.' + patch + '-' + prerelease[0] + '.' + (Number(prerelease[1]) + 1)
+
+    // If we were already on a stable major, only update the prerelease of major
+    if(wasNotPatched && wasNotMinored) {
+      betaMajor = betaPatch
+    }
+
+    // If we were on a stable minor, only update the prerelease of minor
+    if(wasNotPatched && wasNotMinored) {
+      betaMinor = betaPatch
+    }
+  }
 
   let nextVersion = await cliAsk.prompt([{
     name: 'version',
     type: 'list',
-    message: `Select the new version for "${json.name}" (current version: ${json.version})`,
+    message: `Select the new version for "${json.name}" (current version: ${version})`,
     default: 0,
     choices: [nextPatch, nextMinor, nextMajor, 'Custom', betaPatch, betaMinor, betaMajor, 'Do not release'],
     pageSize: 10,
