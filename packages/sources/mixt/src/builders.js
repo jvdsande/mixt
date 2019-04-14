@@ -44,7 +44,7 @@ async function pikaPackBuilder(cwd, pkg, packagesDir, silent) {
 
 async function copyCommand(cwd, pkg, packagesDir) {
   try {
-    cp(cwd, path.resolve(packagesDir, pkg.name))
+    await cp(cwd, path.resolve(packagesDir, pkg.name))
     return true
   } catch(err) {
     cli.error("An error occurred while building package " + JSON.stringify(pkg.name) + ": ", err)
