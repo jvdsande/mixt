@@ -28,7 +28,10 @@ async function fullResolve({ projectDir }) {
 }
 
 async function cheapResolve({ packageJson }) {
-  return Object.keys(packageJson.dependencies)
+  return Object.keys({
+    ...(packageJson.peerDependencies || {}),
+    ...(packageJson.dependencies || {}),
+  })
 }
 
 export async function resolvePackage({
@@ -58,6 +61,7 @@ export async function resolvePackage({
     return false
   }
   packageJson.dependencies = packageJson.dependencies || {}
+  const peerDependencies = packageJson.peerDependencies || {}
 
   cli.info('Checking package ' + projectDir)
 
@@ -74,15 +78,41 @@ export async function resolvePackage({
 
   using.forEach(m => {
     const oldDep = packageJson.dependencies[m] !== '*' ? packageJson.dependencies[m] : null
-    packageJson.dependencies[m] = oldDep || localPackages[m] || globalPackages[m]
+    const peerDep = peerDependencies[m] !== '*' ? peerDependencies[m] : null
+    const hasPeer = !!peerDependencies[m]
 
-    if(!packageJson.dependencies[m]) {
-      cli.error('Missing dependency: ' + m)
-      missing = true
-    } else if(!oldDep) {
-      cli.info('Added dependency ' + m + ' with version ' + packageJson.dependencies[m])
-    } else if(oldDep !== packageJson.dependencies[m]) {
-      cli.info('Updated dependency ' + m + ' to version ' + packageJson.dependencies[m])
+    // If the dep is already in "dependencies", keep the value
+    // Else, if the dep is in "devDependencies", use this value
+    // Else, check if we have this package locally, and take the value
+    // Else, check if it is a dependency of the main package, and take the value
+    const dependency = oldDep || peerDep || localPackages[m] || globalPackages[m]
+
+    // If the package has the dep defined as a peer dep, do not set main dep, set peer dep
+    if(hasPeer) {
+      packageJson.peerDependencies = packageJson.peerDependencies || {}
+      packageJson.peerDependencies[m] = dependency
+
+      if(!dependency) {
+        cli.error('Missing peer dependency: ' + m)
+        missing = true
+      } else if(!peerDep) {
+        cli.info('Added peer dependency ' + m + ' with version ' + packageJson.dependencies[m])
+      } else if(peerDep !== packageJson.peerDependencies[m]) {
+        cli.info('Updated dependency ' + m + ' to version ' + packageJson.dependencies[m])
+      }
+    }
+    // Else, set it as main dep
+    else {
+      packageJson.dependencies[m] = dependency
+
+      if(!dependency) {
+        cli.error('Missing dependency: ' + m)
+        missing = true
+      } else if(!oldDep) {
+        cli.info('Added dependency ' + m + ' with version ' + packageJson.dependencies[m])
+      } else if(oldDep !== packageJson.dependencies[m]) {
+        cli.info('Updated dependency ' + m + ' to version ' + packageJson.dependencies[m])
+      }
     }
   })
 

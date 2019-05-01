@@ -41,7 +41,13 @@ export async function getLocalPackages (packagesDir) {
 export async function getGlobalPackages(rootDir) {
   const rootJson = await getJson(path.resolve(rootDir, 'package.json'))
 
-  return rootJson.dependencies
+  return rootJson.dependencies || {}
+}
+
+export async function getGlobalDevPackages(rootDir) {
+  const rootJson = await getJson(path.resolve(rootDir, 'package.json'))
+
+  return rootJson.devDependencies || {}
 }
 
 export async function getPackages(sourceDir) {
