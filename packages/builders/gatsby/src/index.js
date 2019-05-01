@@ -67,12 +67,12 @@ const gatsbyBuilder = {
 
   async watch({cwd, pkg, packagesDir, silent, utils: { process, file }, options}) {
     try {
-      // Check if @pika/pack is installed globally
+      // Check if Gatsby is installed globally
       try {
-        await process.spawnProcess('pika', true)
+        await process.spawnProcess('gatsby', true)
       } catch(err) {
-        cli.error("@pika/pack needs to be installed globally in order to use this builder.")
-        cli.error("Please run `npm i -g @pika/pack` and try again")
+        cli.error("gatsby needs to be installed globally in order to use this builder.")
+        cli.error("Please run `npm i -g gatsby` and try again")
 
         return false
       }
@@ -81,6 +81,7 @@ const gatsbyBuilder = {
       if(options && options.usePrefix) {
         args.push('--prefix-paths')
       }
+
       if(options && options.port) {
         args.push('-p')
         args.push(options.port)
@@ -88,7 +89,17 @@ const gatsbyBuilder = {
 
       let success = true
 
-      success = success && await process.spawnCommand('gatsby', args, { cwd })
+      success = success && await process.spawnCommand(
+        'gatsby',
+        args,
+        {
+          cwd,
+          env: {
+            ...process.env,
+            GATSBY_WEBPACK_PUBLICPATH: `http://localhost:${(options && options.port) || 8000}/`
+          }
+        }
+      )
 
       return success
     } catch(err) {
