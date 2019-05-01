@@ -82,7 +82,7 @@ export async function resolvePackage({
     const hasPeer = !!peerDependencies[m]
 
     // If the dep is already in "dependencies", keep the value
-    // Else, if the dep is in "devDependencies", use this value
+    // Else, if the dep is in "peerDependencies", use this value
     // Else, check if we have this package locally, and take the value
     // Else, check if it is a dependency of the main package, and take the value
     const dependency = oldDep || peerDep || localPackages[m] || globalPackages[m]
