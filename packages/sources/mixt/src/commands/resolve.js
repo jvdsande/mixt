@@ -96,9 +96,9 @@ export async function resolvePackage({
         cli.error('Missing peer dependency: ' + m)
         missing = true
       } else if(!peerDep) {
-        cli.info('Added peer dependency ' + m + ' with version ' + packageJson.dependencies[m])
+        cli.info('Added peer dependency ' + m + ' with version ' + packageJson.peerDependencies[m])
       } else if(peerDep !== packageJson.peerDependencies[m]) {
-        cli.info('Updated dependency ' + m + ' to version ' + packageJson.dependencies[m])
+        cli.info('Updated dependency ' + m + ' to version ' + packageJson.peerDependencies[m])
       }
     }
     // Else, set it as main dep
