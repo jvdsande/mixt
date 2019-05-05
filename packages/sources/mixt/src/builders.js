@@ -167,7 +167,7 @@ export async function getCommand(json) {
   }
 
   if(await detectWatch(json)) return watchCommand
-  if(await detectPikaPack(json)) return pikaPackCommand
   if(await detectMixt(json)) return mixtCommand
+  if(await detectPikaPack(json)) return pikaPackCommand
   return copyCommand
 }
