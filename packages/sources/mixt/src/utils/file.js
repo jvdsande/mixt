@@ -1,6 +1,7 @@
 import fs from "fs"
 import cli from 'cli'
 import { ncp } from 'ncp'
+import mkdirp from 'mkdirp'
 
 function promisify(func) {
   return (...args) => new Promise((resolve, reject) => func(...args, (err, res) => err ? reject(err) : resolve(res)))
@@ -9,7 +10,7 @@ function promisify(func) {
 export const readDir = promisify(fs.readdir)
 export const readFile = promisify(fs.readFile)
 export const writeFile = promisify(fs.writeFile)
-export const mkdir = promisify(fs.mkdir)
+export const mkdir = promisify(mkdirp)
 export const cp = promisify(ncp)
 
 

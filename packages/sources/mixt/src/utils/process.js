@@ -103,7 +103,7 @@ export async function spawnWatch(watcher, cwd, pkg, packagesDir, silent) {
 export async function createStub(packagesDir, pkg) {
   await rmrf(path.resolve(packagesDir, `./${pkg.name}`))
 
-  await mkdir(path.resolve(packagesDir, `./${pkg.name}`), { recursive: true })
+  await mkdir(path.resolve(packagesDir, `./${pkg.name}`), {})
 
   await touch(path.resolve(packagesDir, `./${pkg.name}`, './index.js'))
 }

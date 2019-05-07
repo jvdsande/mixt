@@ -30,7 +30,7 @@ export async function command({
   sourceDir = path.resolve(sourceDir, pkgParts.join('/'))
 
   // Create the new package folder
-  await mkdir(path.resolve(rootDir, sourceDir), { recursive: true })
+  await mkdir(path.resolve(rootDir, sourceDir), {})
 
   // Initialize the NPM package
   await spawnCommand('npm', ['init'], {cwd: sourceDir})

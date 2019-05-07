@@ -14,7 +14,7 @@ export async function command({
   cli.info("Cleaning " + JSON.stringify(packagesDir) + "...")
 
   await rmrf(packagesDir)
-  await mkdir(packagesDir, { recursive: true })
+  await mkdir(packagesDir, {})
 }
 
 /** Command export */

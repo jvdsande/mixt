@@ -6,7 +6,7 @@ import rmrf from 'rmrf'
 import { getJson, readDir, mkdir } from './file'
 
 export async function getLocalPackages (packagesDir) {
-  await mkdir(packagesDir, { recursive: true })
+  await mkdir(packagesDir, {})
 
   const packages = await readDir(packagesDir)
 

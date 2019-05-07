@@ -10,11 +10,11 @@ export async function command({
   rootDir, packagesDir, sourcesDir, config,
 }) {
   // Create the packages directory
-  await mkdir(packagesDir, { recursive: true })
+  await mkdir(packagesDir, {})
 
   // Create all the sources directories
   for(const source of sourcesDir) {
-    await mkdir(path.resolve(rootDir, source), { recursive: true })
+    await mkdir(path.resolve(rootDir, source), {})
   }
 
   // Initialize the NPM package
