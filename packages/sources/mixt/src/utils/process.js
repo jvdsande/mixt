@@ -73,7 +73,7 @@ export async function spawnWatch(watcher, cwd, pkg, packagesDir, silent) {
       cli.info('Package ' + JSON.stringify(pkg.name) + ' has changed. Rebuilding...')
 
       // Delete the build folder
-      // await rmrf(path.resolve(packagesDir, `./${pkg.name}`))
+      await rmrf(path.resolve(packagesDir, `./${pkg.name}`))
 
       // Build
       await watcher(cwd, pkg, packagesDir, silent)

@@ -27,7 +27,7 @@ async function watchPackage({source, pkg, packagesDir, quietBuild}) {
 
 /** Command function **/
 export async function command({
-  rootDir, packagesDir, sourcesDir,
+  packagesDir, sourcesDir,
   packages, quietBuild
 }) {
   const packagesBySource = await getPackagesBySource(packages, sourcesDir)
