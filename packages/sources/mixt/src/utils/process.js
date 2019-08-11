@@ -3,7 +3,9 @@ import chokidar from 'chokidar'
 import cli from 'cli'
 import path from 'path'
 import rmrf from 'rmrf'
+import {resolvePackage} from '../commands/resolve'
 import {mkdir, touch} from './file'
+import {getGlobalPackages, getLocalPackages, installPackage} from './package'
 
 export async function spawnProcess(cmd, silent) {
   return new Promise(function (resolve, reject) {
@@ -49,12 +51,14 @@ export async function spawnCommand(cmd, args, params, silent) {
   });
 }
 
-export async function spawnWatch(watcher, cwd, pkg, packagesDir, silent) {
+export async function spawnWatch(watcher, cwd, pkg, rootDir, packagesDir, silent, resolve, cheap) {
   let timeout = null
   let ranOnce = false
   let rerun = false
   let running = false
 
+  const localPackages = await getLocalPackages(packagesDir)
+  const globalPackages = await getGlobalPackages(rootDir)
 
   const build = () => {
     clearTimeout(timeout)
@@ -78,6 +82,23 @@ export async function spawnWatch(watcher, cwd, pkg, packagesDir, silent) {
       // Build
       await watcher(cwd, pkg, packagesDir, silent)
 
+      if(resolve) {
+        // Resolve
+        await resolvePackage({
+          pkg: pkg.name,
+          packagesDir,
+          localPackages,
+          globalPackages,
+          cheap,
+          resolver: pkg.mixt && pkg.mixt.resolver,
+        })
+
+        // Install
+        await installPackage({pkg: pkg.name, packagesDir})
+
+        cli.info("Dependencies up to date")
+      }
+
       cli.info('Package ' + JSON.stringify(pkg.name) + ' built.')
 
       running = false
@@ -96,6 +117,24 @@ export async function spawnWatch(watcher, cwd, pkg, packagesDir, silent) {
 
   // Build
   await watcher(cwd, pkg, packagesDir, silent)
+
+  if(resolve) {
+    // Resolve
+    await resolvePackage({
+      pkg: pkg.name,
+      packagesDir,
+      localPackages,
+      globalPackages,
+      cheap,
+      resolver: pkg.mixt && pkg.mixt.resolver,
+    })
+
+    // Install
+    await installPackage({pkg: pkg.name, packagesDir})
+
+    cli.info("Dependencies up to date")
+  }
+
   chokidar.watch(cwd, {ignored: /(^|[\/\\])\../, persistent: true}).on('all', build);
 }
 

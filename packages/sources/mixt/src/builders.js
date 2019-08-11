@@ -72,7 +72,7 @@ async function pikaPackCommand(cwd, pkg, packagesDir, silent) {
 
     return await spawnCommand(
       cmd,
-      [...`build --out=${path.resolve(packagesDir, pkg.name)}`.split(' ')],
+      `build --out=${path.resolve(packagesDir, pkg.name)}`.split(' '),
       {cwd},
       silent,
     )
@@ -86,7 +86,7 @@ async function watchCommand(cwd, pkg, packagesDir, silent) {
   try {
     return await spawnCommand(
       'npm',
-      [...`run watch`.split(' ')],
+      `run watch`.split(' '),
       {cwd},
       silent,
     )

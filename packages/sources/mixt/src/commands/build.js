@@ -9,7 +9,8 @@ import {
   cleanPackagesDirectory,
   getGlobalPackages,
   getLocalPackages,
-  getPackagesBySource
+  getPackagesBySource,
+  installPackage,
 } from '../utils/package'
 import { createStub, spawnCommand } from '../utils/process'
 
@@ -98,6 +99,15 @@ export async function command({
         cheap,
         resolver: pkg.json && pkg.json.mixt && pkg.json.mixt.resolver
       })
+
+      cli.info("Installing dependencies")
+
+      await installPackage({
+        pkg: pkg.json.name,
+        packagesDir,
+      })
+
+      cli.info("Project dependencies installed")
     }
   }
 }

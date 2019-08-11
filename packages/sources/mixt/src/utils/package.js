@@ -4,6 +4,7 @@ import path from "path"
 import rmrf from 'rmrf'
 
 import { getJson, readDir, mkdir } from './file'
+import { spawnCommand } from './process'
 
 export async function getLocalPackages (packagesDir) {
   await mkdir(packagesDir, {})
@@ -161,4 +162,15 @@ export async function cleanPackagesDirectory(sourcesDir, packagesDir) {
     cli.info('Cleaning package ' + JSON.stringify(pkg))
     return rmrf(path.resolve(packagesDir, pkg))
   }))
+}
+
+
+export async function installPackage({ pkg, packagesDir })
+{
+  return await spawnCommand(
+    "npm",
+    ["install"],
+    { cwd: path.resolve(packagesDir, pkg) },
+    true
+  )
 }

@@ -6,7 +6,7 @@ import {getPackagesBySource} from '../utils/package'
 import {createStub, spawnWatch} from '../utils/process'
 
 /** Private functions **/
-async function watchPackage({source, pkg, packagesDir, quietBuild}) {
+async function watchPackage({source, pkg, rootDir, packagesDir, quietBuild, resolve, cheap}) {
   cli.info('Watching ' + JSON.stringify(pkg.json.name) + '...')
 
   // Check if a "watch" script is present
@@ -20,15 +20,17 @@ async function watchPackage({source, pkg, packagesDir, quietBuild}) {
   } else {
     await spawnWatch(
       watcher,
-      pkg.cwd, pkg.json, packagesDir, quietBuild
+      pkg.cwd, pkg.json, rootDir, packagesDir, quietBuild,
+      resolve, cheap,
     )
   }
 }
 
 /** Command function **/
 export async function command({
-  packagesDir, sourcesDir,
-  packages, quietBuild
+  rootDir, packagesDir, sourcesDir,
+  packages, quietBuild,
+  resolve, cheap,
 }) {
   const packagesBySource = await getPackagesBySource(packages, sourcesDir)
 
@@ -39,9 +41,16 @@ export async function command({
     }
   }
 
+  console.log({
+    quietBuild,
+    resolve,
+    cheap,
+  })
+
+
   for (const source of packagesBySource) {
     for (const pkg of source.packages) {
-      await watchPackage({source, pkg, packagesDir, quietBuild})
+      await watchPackage({source, pkg, rootDir, packagesDir, quietBuild, resolve, cheap, })
     }
   }
 }
@@ -52,6 +61,8 @@ export default function WatchCommand(program) {
     name: 'watch [packages...]',
     options: [
       options.quietBuild,
+      options.noResolve,
+      options.cheap,
     ],
     command,
   })
