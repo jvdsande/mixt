@@ -1,4 +1,5 @@
 import cli from 'cli'
+import path from 'path'
 import commandExists from 'command-exists'
 
 const pikaPackBuilder = {
@@ -49,7 +50,7 @@ const pikaPackBuilder = {
 
       return await process.spawnCommand(
         cmd,
-        [...`build --out=../../node_modules/${pkg.name}`.split(' ')],
+        [...`build --out=${path.resolve(packagesDir, pkg.name)}`.split(' ')],
         { cwd },
         silent,
       )
