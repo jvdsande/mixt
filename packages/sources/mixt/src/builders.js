@@ -1,7 +1,7 @@
 import cli from 'cli'
-import path from "path"
+import path from 'path'
 import {cp} from './utils/file'
-import { pikaPackAvailable } from './utils/misc'
+import {pikaPackAvailable} from './utils/misc'
 import * as process from './utils/process'
 import * as file from './utils/file'
 
@@ -46,8 +46,8 @@ async function copyCommand(cwd, pkg, packagesDir) {
   try {
     await cp(cwd, path.resolve(packagesDir, pkg.name))
     return true
-  } catch(err) {
-    cli.error("An error occurred while building package " + JSON.stringify(pkg.name) + ": ", err)
+  } catch (err) {
+    cli.error('An error occurred while building package ' + JSON.stringify(pkg.name) + ': ', err)
     return false
   }
 }
@@ -60,8 +60,8 @@ async function mixtCommand(cwd, pkg, packagesDir, silent) {
       {cwd},
       silent,
     )
-  } catch(err) {
-    cli.error("An error occurred while building package " + JSON.stringify(pkg.name) + ": ", err)
+  } catch (err) {
+    cli.error('An error occurred while building package ' + JSON.stringify(pkg.name) + ': ', err)
     return false
   }
 }
@@ -70,14 +70,21 @@ async function pikaPackCommand(cwd, pkg, packagesDir, silent) {
   try {
     const cmd = await pikaPackAvailable()
 
+    console.log({
+      cmd,
+      args: [...`build --out=../../node_modules/${pkg.name}`.split(' ')],
+      opts: {cwd},
+      silent,
+    })
+
     return await spawnCommand(
       cmd,
       [...`build --out=../../node_modules/${pkg.name}`.split(' ')],
       {cwd},
       silent,
     )
-  } catch(err) {
-    cli.error("An error occurred while building package " + JSON.stringify(pkg.name) + ": ", err)
+  } catch (err) {
+    cli.error('An error occurred while building package ' + JSON.stringify(pkg.name) + ': ', err)
     return false
   }
 }
@@ -90,9 +97,9 @@ async function watchCommand(cwd, pkg, packagesDir, silent) {
       {cwd},
       silent,
     )
-  } catch(err) {
-    cli.info("A problem occurred while watching package " + JSON.stringify(pkg.name))
-    return false;
+  } catch (err) {
+    cli.info('A problem occurred while watching package ' + JSON.stringify(pkg.name))
+    return false
   }
 }
 
@@ -104,37 +111,37 @@ async function detectWatch(json) {
 }
 
 async function detectMixt(json) {
-  return json.scripts && json.scripts.mixt;
+  return json.scripts && json.scripts.mixt
 }
 
 async function detectPikaPack(json) {
-  if(!json['@pika/pack']) {
+  if (!json['@pika/pack']) {
     return false
   }
 
-  return await pikaPackAvailable();
+  return await pikaPackAvailable()
 }
 
 
 /* Exports */
 
 export function loadBuilder(json, mixtBuilder) {
-  if(mixtBuilder || (json.mixt && json.mixt.builder)) {
+  if (mixtBuilder || (json.mixt && json.mixt.builder)) {
     const builderBase = mixtBuilder || json.mixt.builder.name || json.mixt.builder
     const builderName = builderBase.startsWith('mixt-builder') ? builderBase : `mixt-builder-${builderBase}`
 
-    if(builderName !== "standard") {
+    if (builderName !== 'standard') {
       cli.info(`Loading builder "${builderName}"`)
       try {
         let builder = require(builderName)
 
         // Handle node-like export
-        if(!builder.build && builder.default && builder.default.build) {
+        if (!builder.build && builder.default && builder.default.build) {
           builder = builder.default
         }
 
         return builder
-      } catch(err) {
+      } catch (err) {
         cli.error(`"${builderName}" not found. Did you forget to install it?`)
 
         cli.fatal(err)
@@ -148,28 +155,53 @@ export function loadBuilder(json, mixtBuilder) {
 export async function getBuilder(json) {
   const builder = loadBuilder(json)
 
-  if(builder) {
-    if(!builder.build) {
+  if (builder) {
+    if (!builder.build) {
       cli.fatal(`"${builder.name}" does not expose a 'build' function. Please use a valid Mixt builder.`)
     }
 
-    return (cwd, pkg, packagesDir, silent) => builder.build({ cwd, pkg, packagesDir, silent, utils: { process, file }, options: json.mixt.builder.options })
+    return (cwd, pkg, packagesDir, silent) => builder.build({
+      cwd,
+      pkg,
+      packagesDir,
+      silent,
+      utils: {process, file},
+      options: json.mixt.builder.options
+    })
   }
 
-  if(await detectPikaPack(json)) return pikaPackBuilder
-  if(await detectMixt(json)) return mixtBuilder
+  if (await detectPikaPack(json)) return pikaPackBuilder
+  if (await detectMixt(json)) return mixtBuilder
   return copyBuilder
 }
 
 export async function getCommand(json) {
   const builder = loadBuilder(json)
 
-  if(builder && builder.watch) {
-      return (cwd, pkg, packagesDir, silent) => builder.watch({ cwd, pkg, packagesDir, silent, utils: { process, file }, options: json.mixt.builder.options })
+  if (builder && builder.watch) {
+    return (cwd, pkg, packagesDir, silent) => builder.watch({
+      cwd,
+      pkg,
+      packagesDir,
+      silent,
+      utils: {process, file},
+      options: json.mixt.builder.options
+    })
   }
 
-  if(await detectWatch(json)) return watchCommand
-  if(await detectMixt(json)) return mixtCommand
-  if(await detectPikaPack(json)) return pikaPackCommand
+  if(builder && builder.build) {
+    return (cwd, pkg, packagesDir, silent) => builder.build({
+      cwd,
+      pkg,
+      packagesDir,
+      silent,
+      utils: {process, file},
+      options: json.mixt.builder.options
+    })
+  }
+
+  if (await detectWatch(json)) return watchCommand
+  if (await detectMixt(json)) return mixtCommand
+  if (await detectPikaPack(json)) return pikaPackCommand
   return copyCommand
 }

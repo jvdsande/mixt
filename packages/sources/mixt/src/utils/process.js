@@ -96,7 +96,6 @@ export async function spawnWatch(watcher, cwd, pkg, packagesDir, silent) {
 
   // Build
   await watcher(cwd, pkg, packagesDir, silent)
-  cli.info('Done!')
   chokidar.watch(cwd, {ignored: /(^|[\/\\])\../, persistent: true}).on('all', build);
 }
 
