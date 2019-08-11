@@ -1,11 +1,9 @@
 import commandExists from 'command-exists'
-import { spawnProcess } from './process'
 
 export async function pikaPackAvailable() {
   let packFound = false
   let pikaPackFound = false
-
-  console.log("Detecting pika command: pack or pika-pack")
+  let pikaFound = false
 
   // Check if @pika/pack is installed globally
   try {
@@ -22,8 +20,19 @@ export async function pikaPackAvailable() {
     pikaPackFound = false
   }
 
-  if(!pikaPackFound && !packFound) {
+  try {
+    await commandExists('pika')
+    pikaFound = true
+  } catch(err) {
+    pikaFound = false
+  }
+
+  if(!pikaPackFound && !packFound && !pikaFound) {
     return false
+  }
+
+  if(pikaFound) {
+    return 'pika'
   }
 
   return packFound ? 'pack' : 'pika-pack'

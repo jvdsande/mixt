@@ -14,6 +14,7 @@ const pikaPackBuilder = {
     try {
       let packFound = false
       let pikaPackFound = false
+      let pikaFound = false
 
       // Check if @pika/pack is installed globally
       try {
@@ -30,14 +31,21 @@ const pikaPackBuilder = {
         pikaPackFound = false
       }
 
-      if(!packFound && !pikaPackFound) {
+      try {
+        await commandExists('pika')
+        pikaPackFound = true
+      } catch(err) {
+        pikaPackFound = false
+      }
+
+      if(!packFound && !pikaPackFound && !pikaFound) {
         cli.error("@pika/pack needs to be installed globally in order to use this builder.")
         cli.error("Please run `npm i -g @pika/pack` and try again")
 
         return false
       }
 
-      const cmd = packFound ? 'pack' : 'pika-pack'
+      const cmd = pikaFound ? 'pika' : (packFound ? 'pack' : 'pika-pack')
 
       return await process.spawnCommand(
         cmd,
