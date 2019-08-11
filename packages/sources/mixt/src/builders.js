@@ -70,13 +70,6 @@ async function pikaPackCommand(cwd, pkg, packagesDir, silent) {
   try {
     const cmd = await pikaPackAvailable()
 
-    console.log({
-      cmd,
-      args: [...`build --out=../../node_modules/${pkg.name}`.split(' ')],
-      opts: {cwd},
-      silent,
-    })
-
     return await spawnCommand(
       cmd,
       [...`build --out=../../node_modules/${pkg.name}`.split(' ')],
