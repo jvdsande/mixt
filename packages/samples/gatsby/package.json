@@ -2,7 +2,7 @@
   "name": "mixt-sample-gatsby",
   "private": true,
   "description": "Sample app built with Gatsby builder",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Jérémie van der Sande <jeremie.vandersande@gmail.com",
   "mixt": {
     "builder": {

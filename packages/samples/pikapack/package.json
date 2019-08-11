@@ -1,6 +1,6 @@
 {
   "name": "mixt-sample-pika-pack",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "Sample app built with Pika-pack builder",
   "main": "index.js",
