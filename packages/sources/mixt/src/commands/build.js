@@ -99,17 +99,17 @@ export async function command({
         cheap,
         resolver: pkg.json && pkg.json.mixt && pkg.json.mixt.resolver
       })
-
-      cli.info("Installing dependencies")
-
-      await installPackage({
-        pkg: pkg.json.name,
-        packagesDir,
-      })
-
-      cli.info("Project dependencies installed")
     }
   }
+
+  cli.info("Installing dependencies")
+  for(const pkg of successPackages) {
+    await installPackage({
+      pkg: pkg.json.name,
+      packagesDir,
+    })
+  }
+  cli.info(`Installed dependencies for ${successPackages.length} package${successPackages.length > 1 ? "s" : ""}`)
 }
 
 /** Command export */
