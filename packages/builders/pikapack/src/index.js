@@ -24,7 +24,7 @@ const pikaPackBuilder = {
       }
 
       try {
-        await commandExists('pika-pack', true)
+        await commandExists('pika-pack')
         pikaPackFound = true
       } catch(err) {
         pikaPackFound = false
