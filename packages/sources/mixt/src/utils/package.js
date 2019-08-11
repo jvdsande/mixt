@@ -169,7 +169,7 @@ export async function installPackage({ pkg, packagesDir })
 {
   return await spawnCommand(
     "npm",
-    ["install"],
+    ["install", "--only=prod"],
     { cwd: path.resolve(packagesDir, pkg) },
     true
   )
