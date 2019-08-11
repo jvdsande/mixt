@@ -68,8 +68,10 @@ async function mixtCommand(cwd, pkg, packagesDir, silent) {
 
 async function pikaPackCommand(cwd, pkg, packagesDir, silent) {
   try {
+    const cmd = await pikaPackAvailable()
+
     return await spawnCommand(
-      'pack',
+      cmd,
       [...`build --out=../../node_modules/${pkg.name}`.split(' ')],
       {cwd},
       silent,
