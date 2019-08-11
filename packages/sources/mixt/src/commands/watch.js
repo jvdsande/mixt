@@ -41,13 +41,6 @@ export async function command({
     }
   }
 
-  console.log({
-    quietBuild,
-    resolve,
-    cheap,
-  })
-
-
   for (const source of packagesBySource) {
     for (const pkg of source.packages) {
       await watchPackage({source, pkg, rootDir, packagesDir, quietBuild, resolve, cheap, })
