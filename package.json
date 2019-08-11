@@ -4,24 +4,26 @@
   "description": "Main repository for the Mixt packager",
   "main": "index.js",
   "scripts": {
-    "ln": "rm node_modules/.bin/mixt && ln -s `pwd`/packages/node_modules/mixt/dist-node/index.bin.js node_modules/.bin/mixt",
-    "prebuild": "rm -rf packages/node_modules/mixt && cd packages/sources/mixt && pack build && mv pkg ../../node_modules/mixt"
+    "ln": "rm -rf node_modules/.bin/mixt && ln -s `pwd`/packages/node_modules/mixt/dist-node/index.bin.js node_modules/.bin/mixt",
+    "prebuild": "rm -rf packages/node_modules/mixt && cd packages/sources/mixt && pika-pack build && mv pkg ../../node_modules/mixt"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@pika/pack": "^0.3.2",
-    "@pika/plugin-build-node": "^0.3.11",
-    "@pika/plugin-build-types": "^0.3.10",
-    "@pika/plugin-bundle-node": "^0.3.11",
-    "@pika/plugin-simple-bin": "^0.3.11",
-    "@pika/plugin-standard-pkg": "^0.3.11",
-    "@pika/plugin-ts-standard-pkg": "^0.3.10"
+    "@pika/pack": "^0.5.0",
+    "@pika/plugin-build-node": "^0.6.0",
+    "@pika/plugin-build-types": "^0.6.0",
+    "@pika/plugin-build-web": "^0.6.0",
+    "@pika/plugin-bundle-node": "^0.6.0",
+    "@pika/plugin-simple-bin": "^0.6.0",
+    "@pika/plugin-standard-pkg": "^0.6.0",
+    "@pika/plugin-ts-standard-pkg": "^0.6.0"
   },
   "dependencies": {
     "add": "^2.0.6",
     "chokidar": "^2.1.1",
     "cli": "^1.0.1",
+    "command-exists": "^1.2.8",
     "commander": "^2.19.0",
     "depcheck": "^0.7.1",
     "inquirer": "^6.2.2",

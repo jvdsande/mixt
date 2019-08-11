@@ -1,4 +1,5 @@
 import cli from 'cli'
+import commandExists from 'command-exists'
 
 const pikaPackBuilder = {
   name: 'mixt-builder-pika-pack',
@@ -16,14 +17,14 @@ const pikaPackBuilder = {
 
       // Check if @pika/pack is installed globally
       try {
-        await process.spawnProcess('pack', true)
+        await commandExists('pack')
         packFound = true
       } catch(err) {
         packFound = false
       }
 
       try {
-        await process.spawnProcess('pika-pack', true)
+        await commandExists('pika-pack', true)
         pikaPackFound = true
       } catch(err) {
         pikaPackFound = false

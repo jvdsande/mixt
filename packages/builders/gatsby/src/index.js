@@ -1,5 +1,6 @@
 import cli from 'cli'
 import path from 'path'
+import commandExists from 'command-exists'
 
 const gatsbyBuilder = {
   name: 'mixt-builder-gatsby',
@@ -21,7 +22,7 @@ const gatsbyBuilder = {
     try {
       // Check if Gatsby is installed globally
       try {
-        await process.spawnProcess('gatsby', true)
+        await commandExists('gatsby')
       } catch(err) {
         cli.error("gatsby needs to be installed globally in order to use this builder.")
         cli.error("Please run `npm i -g gatsby` and try again")
@@ -69,7 +70,7 @@ const gatsbyBuilder = {
     try {
       // Check if Gatsby is installed globally
       try {
-        await process.spawnProcess('gatsby', true)
+        await commandExists('gatsby')
       } catch(err) {
         cli.error("gatsby needs to be installed globally in order to use this builder.")
         cli.error("Please run `npm i -g gatsby` and try again")
