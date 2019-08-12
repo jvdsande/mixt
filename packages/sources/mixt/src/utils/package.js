@@ -167,10 +167,14 @@ export async function cleanPackagesDirectory(sourcesDir, packagesDir) {
 
 export async function installPackage({ pkg, packagesDir })
 {
-  return await spawnCommand(
-    "npm",
-    ["install", "--only=prod"],
-    { cwd: path.resolve(packagesDir, pkg) },
-    true
-  )
+  try {
+    await spawnCommand(
+      "npm",
+      ["install", "--only=prod"],
+      {cwd: path.resolve(packagesDir, pkg)},
+      true
+    )
+  } catch(err) {
+    cli.warn(`Unable to install dependencies for package ${pkg}`)
+  }
 }
