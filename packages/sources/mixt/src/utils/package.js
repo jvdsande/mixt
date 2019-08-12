@@ -175,6 +175,6 @@ export async function installPackage({ pkg, packagesDir })
       true
     )
   } catch(err) {
-    cli.warn(`Unable to install dependencies for package ${pkg}`)
+    cli.info(`Unable to install dependencies for package ${pkg}`)
   }
 }
