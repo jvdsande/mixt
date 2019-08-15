@@ -98,11 +98,6 @@ async function setPackageVersion({ json, packagesDir, version, cwd }) {
 async function publishPackage({
   pkg, packagesDir,
 }) {
-  const { json, version, cwd } = pkg
-
-  // Update the version
-  await setPackageVersion({ json, packagesDir, version, cwd })
-
   // Check for private
   if(pkg.json.private) {
     cli.info(`Package "${pkg.json.name}" is private. Skipping publish step.`)
@@ -172,6 +167,14 @@ export async function command({
     }
   }
 
+  // Update packages to release versions
+  for (const pkg of modifiedPackages) {
+    const { json, version, cwd } = pkg
+
+    // Update the version
+    await setPackageVersion({ json, packagesDir, version, cwd })
+  }
+
   let success = true
 
   // Build packages (if not --noBuild)
@@ -194,7 +197,8 @@ export async function command({
     for(const pkg of modifiedPackages) {
       success = success && await resolvePackage({
         cheap,
-        pkg: pkg.json.name, packagesDir,
+        pkg: pkg.json.name,
+        packagesDir,
         localPackages,
         globalPackages,
         resolver: pkg.json && pkg.json.mixt && pkg.json.mixt.resolver
