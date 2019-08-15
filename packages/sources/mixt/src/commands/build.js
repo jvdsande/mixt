@@ -89,6 +89,15 @@ export async function command({
     cli.info(`Failed building ${nbFailed} package${nbFailed > 1 ? 's' : ''}`)
   }
 
+  cli.info("Installing dependencies")
+  for(const pkg of successPackages) {
+    await installPackage({
+      pkg: pkg.json.name,
+      packagesDir,
+    })
+  }
+  cli.info(`Installed dependencies for ${successPackages.length} package${successPackages.length > 1 ? "s" : ""}`)
+
   if(resolve) {
     for(const pkg of successPackages) {
       await resolvePackage({
@@ -101,15 +110,6 @@ export async function command({
       })
     }
   }
-
-  cli.info("Installing dependencies")
-  for(const pkg of successPackages) {
-    await installPackage({
-      pkg: pkg.json.name,
-      packagesDir,
-    })
-  }
-  cli.info(`Installed dependencies for ${successPackages.length} package${successPackages.length > 1 ? "s" : ""}`)
 }
 
 /** Command export */

@@ -3,9 +3,8 @@ import chokidar from 'chokidar'
 import cli from 'cli'
 import path from 'path'
 import rmrf from 'rmrf'
-import {resolvePackage} from '../commands/resolve'
 import {mkdir, touch} from './file'
-import {getGlobalPackages, getLocalPackages, installPackage} from './package'
+import {installPackage} from './package'
 
 export async function spawnProcess(cmd, silent) {
   return new Promise(function (resolve, reject) {
@@ -32,7 +31,7 @@ export async function spawnCommand(cmd, args, params, silent) {
   return new Promise(function (resolve, reject) {
     const child = spawn(cmd, args, {
       stdio: !silent ? 'inherit' : 'ignore',
-      shell: process.platform == 'win32',
+      shell: process.platform === 'win32',
       ...params,
     });
 
