@@ -133,9 +133,6 @@ export async function command({
   quietBuild, build, tag, resolve,
   git: gitConfig, cheap, force,
 }) {
-  const localPackages = await getLocalPackages(packagesDir)
-  const globalPackages = await getGlobalPackages(rootDir)
-
   let modifiedPackages = await getStatus({
     rootDir, packagesDir, sourcesDir, packages, force,
   })
@@ -191,6 +188,9 @@ export async function command({
 
   // Resolve packages (if not --noResolve)
   if(resolve) {
+    const globalPackages = await getGlobalPackages(rootDir)
+    const localPackages = await getLocalPackages(packagesDir)
+
     for(const pkg of modifiedPackages) {
       success = success && await resolvePackage({
         cheap,

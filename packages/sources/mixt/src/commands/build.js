@@ -48,8 +48,6 @@ export async function command({
   await cleanPackagesDirectory(allSourcesDir, packagesDir)
 
   const packagesBySource = await getPackagesBySource(packages, sourcesDir)
-  const localPackages = await getLocalPackages(packagesDir)
-  const globalPackages = await getGlobalPackages(rootDir)
 
   let nbPackages = 0
   let nbFailed = 0
@@ -99,6 +97,9 @@ export async function command({
   cli.info(`Installed dependencies for ${successPackages.length} package${successPackages.length > 1 ? "s" : ""}`)
 
   if(resolve) {
+    const globalPackages = await getGlobalPackages(rootDir)
+    const localPackages = await getLocalPackages(packagesDir)
+
     for(const pkg of successPackages) {
       await resolvePackage({
         pkg: pkg.json.name,
