@@ -168,12 +168,16 @@ export async function cleanPackagesDirectory(sourcesDir, packagesDir) {
 export async function installPackage({ pkg, packagesDir })
 {
   try {
-    await spawnCommand(
-      "npm",
-      ["install", "--only=prod"],
-      {cwd: path.resolve(packagesDir, pkg)},
-      true
-    )
+    const json = await getJson(path.resolve(packagesDir, pkg, 'package.json'))
+
+    if(json) {
+      await spawnCommand(
+        "npm",
+        ["install", "--only=prod"],
+        {cwd: path.resolve(packagesDir, pkg)},
+        true
+      )
+    }
   } catch(err) {
     cli.info(`Unable to install dependencies for package ${pkg}`)
   }

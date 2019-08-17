@@ -76,14 +76,18 @@ export async function spawnWatch({ watcher, cwd, pkg, packagesDir, silent }) {
       await rmrf(path.resolve(packagesDir, `./${pkg.name}`))
 
       // Build
-      await watcher(cwd, pkg, packagesDir, silent)
+      const built = await watcher(cwd, pkg, packagesDir, silent)
 
-      // Install
-      await installPackage({pkg: pkg.name, packagesDir})
+      if(built) {
+        // Install
+        await installPackage({pkg: pkg.name, packagesDir})
 
-      cli.info("Dependencies up to date")
+        cli.info("Dependencies up to date")
 
-      cli.info('Package ' + JSON.stringify(pkg.name) + ' built.')
+        cli.info('Package ' + JSON.stringify(pkg.name) + ' built.')
+      } else {
+        cli.info('Error building package ' + JSON.stringify(pkg.name))
+      }
 
       running = false
 
@@ -100,12 +104,18 @@ export async function spawnWatch({ watcher, cwd, pkg, packagesDir, silent }) {
   await rmrf(path.resolve(packagesDir, `./${pkg.name}`))
 
   // Build
-  await watcher(cwd, pkg, packagesDir, silent)
+  const built = await watcher(cwd, pkg, packagesDir, silent)
 
-  // Install
-  await installPackage({pkg: pkg.name, packagesDir})
+  if(built) {
+    // Install
+    await installPackage({pkg: pkg.name, packagesDir})
 
-  cli.info("Dependencies up to date")
+    cli.info("Dependencies up to date")
+
+    cli.info('Package ' + JSON.stringify(pkg.name) + ' built.')
+  } else {
+    cli.info('Error building package ' + JSON.stringify(pkg.name))
+  }
 
   chokidar.watch(cwd, {ignored: /(^|[\/\\])\../, persistent: true}).on('all', build);
 }
