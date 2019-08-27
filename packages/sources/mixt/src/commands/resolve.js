@@ -66,12 +66,14 @@ export async function resolvePackage({
   cli.info('Checking package ' + projectDir)
 
   // Check the dependencies of the provided package
-  let using
+  let using = await cheapResolve({ packageJson })
 
-  if(cheap || resolver === "cheap") {
-    using = await cheapResolve({ packageJson })
-  } else {
-    using = await fullResolve({ projectDir })
+  if(!cheap && !(resolver === "cheap")) {
+    const fullUsing = await fullResolve({ projectDir })
+    using = {
+      ...using,
+      ...fullUsing,
+    }
   }
 
   let missing = false
