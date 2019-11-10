@@ -1,6 +1,6 @@
 {
   "name": "mixt-builder-gatsby",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Gatsby builder for Mixt",
   "main": "index.js",
   "@pika/pack": {
