@@ -44,14 +44,8 @@ const gatsbyBuilder = {
         return false
       }
 
-      const publicJson = {
-        name: pkg.name,
-        version: pkg.version,
-        author: pkg.author,
-        description: pkg.description,
-        keywords: pkg.keywords,
-        private: pkg.private,
-      }
+      // Everything except dependencies and devDependencies
+      const { dependencies, devDependencies, ...publicJson } = pkg
 
       try {
         await file.saveJson(path.resolve(packagesDir, pkg.name, 'package.json'), publicJson)
@@ -95,10 +89,6 @@ const gatsbyBuilder = {
         args,
         {
           cwd,
-          env: {
-            ...process.env,
-            GATSBY_WEBPACK_PUBLICPATH: `http://localhost:${(options && options.port) || 8000}/`
-          }
         }
       )
 
