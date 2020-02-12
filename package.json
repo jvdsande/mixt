@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "ln": "rm -rf node_modules/.bin/mixt && ln -s `pwd`/packages/node_modules/mixt/dist-node/index.bin.js node_modules/.bin/mixt",
-    "prebuild": "rm -rf packages/node_modules/mixt && cd packages/sources/mixt && pika-pack build && mv pkg ../../node_modules/mixt"
+    "prebuild": "rm -rf packages/node_modules/mixt && cd packages/sources/mixt && pika-pack build && mv pkg ../../node_modules/mixt",
+
+    "dev:bootstrap": "mixt exec \"npm install\""
   },
   "author": "",
   "license": "ISC",
