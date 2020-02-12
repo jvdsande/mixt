@@ -57,7 +57,7 @@ async function prepublishPackage({ pkg }) {
   let nextVersion = await cliAsk.prompt([{
     name: 'version',
     type: 'list',
-    message: `Select the new version for "${json.name}" (current version: ${version}) ${json.private && privateMsg}`,
+    message: `Select the new version for "${json.name}" (current version: ${version}) ${json.private ? privateMsg : ''}`,
     default: 0,
     choices: [nextPatch, nextMinor, nextMajor, 'Custom', betaPatch, betaMinor, betaMajor, 'Do not release'],
     pageSize: 10,
@@ -215,14 +215,16 @@ export async function command({
 
   // Publish packages
   for (const pkg of modifiedPackages) {
-    success = success && await publishPackage({
-      pkg,
-      packagesDir,
-    })
+    if(!pkg.json.private) {
+      success = success && await publishPackage({
+        pkg,
+        packagesDir,
+      })
 
-    if(!success) {
-      cli.error("An error occurred while publishing. Aborting publish...")
-      return revert()
+      if (!success) {
+        cli.error("An error occurred while publishing. Aborting publish...")
+        return revert()
+      }
     }
   }
 
