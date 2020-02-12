@@ -1,15 +1,35 @@
 import cli from 'cli'
 import path from 'path'
 import {cp} from './utils/file'
-import {pikaPackAvailable} from './utils/misc'
 import * as process from './utils/process'
 import * as file from './utils/file'
 
 const spawnCommand = process.spawnCommand
 
 /* Builders */
+async function standardBuild(cwd, pkg, silent) {
+  // Check if a "build" script is present
+  const buildScript = !!pkg.scripts && !!pkg.scripts.build
+
+  if(buildScript) {
+    !silent && cli.info('Build script found. Executing "npm run build"....')
+
+    try {
+      await spawnCommand('npm', ['run', 'build'], {cwd}, silent)
+    } catch(err) {
+      cli.error(err)
+      throw err
+    }
+  }
+}
 
 async function copyBuilder(cwd, pkg, packagesDir, silent) {
+  try {
+    await standardBuild(cwd, pkg, packagesDir, silent)
+  } catch(err) {
+    return false
+  }
+
   !silent && cli.info(`Copying "${pkg.name}" to ${packagesDir}...`)
 
   const done = await copyCommand(cwd, pkg, packagesDir, silent)
@@ -20,6 +40,12 @@ async function copyBuilder(cwd, pkg, packagesDir, silent) {
 }
 
 async function mixtBuilder(cwd, pkg, packagesDir, silent) {
+  try {
+    await standardBuild(cwd, pkg, packagesDir, silent)
+  } catch(err) {
+    return false
+  }
+
   !silent && cli.info('Found "mixt" script. Building...')
 
   const done = await mixtCommand(cwd, pkg, packagesDir, silent)
@@ -28,17 +54,6 @@ async function mixtBuilder(cwd, pkg, packagesDir, silent) {
 
   return done
 }
-
-async function pikaPackBuilder(cwd, pkg, packagesDir, silent) {
-  !silent && cli.info('Found @pika/pack project. Building...')
-
-  const done = await pikaPackCommand(cwd, pkg, packagesDir, silent)
-
-  done && !silent && cli.info('Done!')
-
-  return done
-}
-
 
 /* Commands */
 
@@ -57,22 +72,6 @@ async function mixtCommand(cwd, pkg, packagesDir, silent) {
     return await spawnCommand(
       'npm',
       ['run', 'mixt'],
-      {cwd},
-      silent,
-    )
-  } catch (err) {
-    cli.error('An error occurred while building package ' + JSON.stringify(pkg.name) + ': ', err)
-    return false
-  }
-}
-
-async function pikaPackCommand(cwd, pkg, packagesDir, silent) {
-  try {
-    const cmd = await pikaPackAvailable()
-
-    return await spawnCommand(
-      cmd,
-      `build --out=${path.resolve(packagesDir, pkg.name)}`.split(' '),
       {cwd},
       silent,
     )
@@ -105,14 +104,6 @@ async function detectWatch(json) {
 
 async function detectMixt(json) {
   return json.scripts && json.scripts.mixt
-}
-
-async function detectPikaPack(json) {
-  if (!json['@pika/pack']) {
-    return false
-  }
-
-  return await pikaPackAvailable()
 }
 
 
@@ -163,7 +154,6 @@ export async function getBuilder(json) {
     })
   }
 
-  if (await detectPikaPack(json)) return pikaPackBuilder
   if (await detectMixt(json)) return mixtBuilder
   return copyBuilder
 }
@@ -195,6 +185,5 @@ export async function getCommand(json) {
 
   if (await detectWatch(json)) return watchCommand
   if (await detectMixt(json)) return mixtCommand
-  if (await detectPikaPack(json)) return pikaPackCommand
   return copyCommand
 }

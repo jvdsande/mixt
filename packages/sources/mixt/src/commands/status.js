@@ -6,7 +6,7 @@ import { getPackagesBySource } from '../utils/package'
 
 /** Private functions **/
 export async function getStatus({
-  rootDir, packagesDir, sourcesDir, packages, force,
+  rootDir, sourcesDir, packages, force,
 }) {
   const git = new Git(rootDir)
 

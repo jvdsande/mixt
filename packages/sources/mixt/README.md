@@ -69,11 +69,6 @@ By default, `mixt build` tries to run the `build` script of your package, then c
 If your build process creates a separate folder containing a prebuilt package, you can add a `mixt` script
 to your package, which will be executed after the `build` in place of the copy.
 
-
-If you are using [@pika/pack](https://www.pikapkg.com/blog/introducing-pika-pack/), **Mixt** will handle it for
-you out of the box by calling `pack build` with all the correct options. Don't forget to install `@pika/pack` as a 
-dependency of your mono-repo!
-
 ### `mixt watch` :
 
 This variant of `mixt build` builds your packages, and watches the filesystem for any change in your sources

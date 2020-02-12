@@ -52,10 +52,12 @@ async function prepublishPackage({ pkg }) {
     }
   }
 
+  const privateMsg = `\n(${json.name} is private and will not be published to NPM)`
+
   let nextVersion = await cliAsk.prompt([{
     name: 'version',
     type: 'list',
-    message: `Select the new version for "${json.name}" (current version: ${version})`,
+    message: `Select the new version for "${json.name}" (current version: ${version}) ${json.private && privateMsg}`,
     default: 0,
     choices: [nextPatch, nextMinor, nextMajor, 'Custom', betaPatch, betaMinor, betaMajor, 'Do not release'],
     pageSize: 10,
@@ -249,7 +251,7 @@ export async function command({
       await git.push()
       await git.pushTags()
     } catch(err) {
-      cli.error('An error occured while pushing changes')
+      cli.error('An error occurred while pushing changes')
       cli.error(err)
     }
   }

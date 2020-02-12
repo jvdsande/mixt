@@ -23,24 +23,10 @@ export async function buildPackage({ source, pkg, packagesDir, quietBuild }) {
   // Delete the build folder
   await rmrf(path.resolve(packagesDir, `./${pkg.json.name}`))
 
-  // Check if a "build" script is present
-  const buildScript = !!pkg.json.scripts && !!pkg.json.scripts.build
+  // Get the configured builder
+  const builder = await getBuilder(pkg.json)
 
-  if(buildScript) {
-    cli.info('Build script found. Executing "npm run build"....')
-
-    try {
-      await spawnCommand('npm', ['run', 'build'], {cwd: pkg.cwd}, quietBuild)
-      return true
-    } catch(err) {
-      cli.error(err)
-      return false
-    }
-  } else {
-    const builder = await getBuilder(pkg.json)
-
-    return await builder(pkg.cwd, pkg.json, packagesDir, quietBuild)
-  }
+  return await builder(pkg.cwd, pkg.json, packagesDir, quietBuild)
 }
 
 /** Command function **/
