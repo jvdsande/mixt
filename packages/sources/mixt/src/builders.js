@@ -25,7 +25,7 @@ async function standardBuild(cwd, pkg, silent) {
 
 async function copyBuilder(cwd, pkg, packagesDir, silent) {
   try {
-    await standardBuild(cwd, pkg, packagesDir, silent)
+    await standardBuild(cwd, pkg, silent)
   } catch(err) {
     return false
   }
@@ -41,7 +41,7 @@ async function copyBuilder(cwd, pkg, packagesDir, silent) {
 
 async function mixtBuilder(cwd, pkg, packagesDir, silent) {
   try {
-    await standardBuild(cwd, pkg, packagesDir, silent)
+    await standardBuild(cwd, pkg, silent)
   } catch(err) {
     return false
   }
