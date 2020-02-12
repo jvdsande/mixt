@@ -45,7 +45,8 @@ const gatsbyBuilder = {
       }
 
       // Everything except dependencies and devDependencies
-      const { dependencies, devDependencies, ...publicJson } = pkg
+      // scripts and mixt entries are also irrelevant for published package
+      const { dependencies, devDependencies, scripts, mixt, ...publicJson } = pkg
 
       try {
         await file.saveJson(path.resolve(packagesDir, pkg.name, 'package.json'), publicJson)

@@ -29,12 +29,18 @@ export async function buildPackage({ source, pkg, packagesDir, quietBuild }) {
   if(buildScript) {
     cli.info('Build script found. Executing "npm run build"....')
 
-    await spawnCommand('npm', ['run', 'build'], { cwd: pkg.cwd }, quietBuild)
+    try {
+      await spawnCommand('npm', ['run', 'build'], {cwd: pkg.cwd}, quietBuild)
+      return true
+    } catch(err) {
+      cli.error(err)
+      return false
+    }
+  } else {
+    const builder = await getBuilder(pkg.json)
+
+    return await builder(pkg.cwd, pkg.json, packagesDir, quietBuild)
   }
-
-  const builder = await getBuilder(pkg.json)
-
-  return await builder(pkg.cwd, pkg.json, packagesDir, quietBuild)
 }
 
 /** Command function **/
@@ -85,6 +91,10 @@ export async function command({
 
   if(nbFailed > 0) {
     cli.info(`Failed building ${nbFailed} package${nbFailed > 1 ? 's' : ''}`)
+  }
+
+  if(nbPackages < 1) {
+    cli.fatal('No packages were successfully built, exiting')
   }
 
   cli.info("Installing dependencies")
