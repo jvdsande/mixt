@@ -27,12 +27,5 @@
   "license": "ISC",
   "devDependencies": {
     "typescript": "^3.7.5"
-  },
-  "dependencies": {
-    "cli": "^1.0.1",
-    "mkdirp": "^0.5.1",
-    "ncp": "^2.0.0",
-    "simple-git": "^1.107.0"
-  },
-  "peerDependencies": {}
+  }
 }
