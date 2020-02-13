@@ -20,11 +20,9 @@ export async function getStatus({
 
     const status = await git.status()
 
-    /*
     if(status.files.length) {
       cli.fatal("Found uncommitted work. Please commit before running this command!")
     }
-     */
 
     await git.fetch()
     const tag = await git.latestTag()

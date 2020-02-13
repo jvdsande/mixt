@@ -190,6 +190,18 @@ export async function command({
 }) {
   let interrupted = false
 
+  const repo = gitUtils.repository(root)
+
+  const isRepo = await repo.checkIsRepo()
+
+  if(isRepo) {
+    const branch = await repo.branch(['--no-color'])
+
+    if(branch.current !== git.branch) {
+      cli.fatal(`Cannot publish from branch "${branch.current}", please checkout "${git.branch}" before publishing`)
+    }
+  }
+
   // Get a list of modified packages
   const modifiedPackages = await getStatus({
     root, packages, all,
@@ -267,10 +279,6 @@ export async function command({
   await check({ modifiedPackages, interrupted })
 
   // Commit to git
-  const repo = gitUtils.repository(root)
-
-  const isRepo = await repo.checkIsRepo()
-
   if(isRepo) {
     await Promise.all(packages.map(async pkg => {
       await repo.add(pkg.src.path)
