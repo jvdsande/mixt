@@ -226,6 +226,12 @@ export async function command({
 
   const toReleasePackages = modifiedPackages.filter(pkg => pkg.src.json.version !== 'Do not release')
 
+  if(!toReleasePackages.length) {
+    await revert({ modifiedPackages })
+    cli.info('No package to release')
+    return
+  }
+
   process.on('SIGINT', async () => {
     interrupted = true
   })
