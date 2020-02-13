@@ -313,7 +313,17 @@ export async function command({
     }
   }
 
+  await check({ modifiedPackages, interrupted })
+
+  // Revert all packages
+  await revertResolve({ modifiedPackages: toReleasePackages })
+
+
   if(isRepo) {
+    await Promise.all(packages.map(async pkg => {
+      await repo.add(pkg.src.path)
+    }))
+    await repo.commit("[Post-Release] " + toReleasePackages.map(pkg => pkg.src.json.name + '-' + pkg.src.json.version).join(','))
     cli.info("Pushing changes...")
     try {
       await repo.push()
@@ -322,18 +332,6 @@ export async function command({
       cli.error('An error occurred while pushing changes')
       cli.error(err)
     }
-  }
-
-  await check({ modifiedPackages, interrupted })
-
-  // Revert all packages
-  await revertResolve({ modifiedPackages: toReleasePackages })
-
-  if(isRepo) {
-    await Promise.all(packages.map(async pkg => {
-      await repo.add(pkg.src.path)
-    }))
-    await repo.commit("[Post-Release] " + toReleasePackages.map(pkg => pkg.src.json.name + '-' + pkg.src.json.version).join(','))
   }
 
   cli.ok("Done!")
