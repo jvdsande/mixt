@@ -165,6 +165,7 @@ async function injectDependencies({ root, allPackages, packages, global, kind })
       } else {
         if(kind === 'dist') {
           cli.error('Missing dependency: ' + dep)
+          throw new Error('Missing dependency')
         }
       }
     })
@@ -259,8 +260,17 @@ export async function command({
 
   // Inject dependencies to packages dist
   cli.info('Resolving dependencies for packages')
-  await injectDependencies({ root, allPackages, packages: toReleasePackages, global, kind: 'dist' })
-  await injectDependencies({ root, allPackages, packages: toReleasePackages, global, kind: 'src' })
+
+  try {
+    await injectDependencies({root, allPackages, packages: toReleasePackages, global, kind: 'dist'})
+    await injectDependencies({root, allPackages, packages: toReleasePackages, global, kind: 'src'})
+  } catch(err) {
+    if(!interrupted) {
+      cli.error('An error occurred while resolving dependencies')
+      await revert({modifiedPackages})
+      return
+    }
+  }
 
   await apply({ modifiedPackages: toReleasePackages })
 
