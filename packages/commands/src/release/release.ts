@@ -319,6 +319,13 @@ export async function command({
   // Revert all packages
   await revertResolve({ modifiedPackages: toReleasePackages })
 
+  if(isRepo) {
+    await Promise.all(packages.map(async pkg => {
+      await repo.add(pkg.src.path)
+    }))
+    await repo.commit("[Post-Release] " + toReleasePackages.map(pkg => pkg.src.json.name + '-' + pkg.src.json.version).join(','))
+  }
+
   cli.ok("Done!")
 }
 
