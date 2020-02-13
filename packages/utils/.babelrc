@@ -1,0 +1,27 @@
+{
+  "plugins": [
+    [
+      "root-import",
+      {
+        "paths": [
+          {
+            "rootPathSuffix": "./src/config",
+            "rootPathPrefix": "config"
+          },
+          {
+            "rootPathSuffix": "./src/file",
+            "rootPathPrefix": "file"
+          },
+          {
+            "rootPathSuffix": "./src/git",
+            "rootPathPrefix": "git"
+          },
+          {
+            "rootPathSuffix": "./src/process",
+            "rootPathPrefix": "process"
+          }
+        ]
+      }
+    ]
+  ]
+}
