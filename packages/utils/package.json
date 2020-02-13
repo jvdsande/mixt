@@ -1,6 +1,6 @@
 {
   "name": "@mixt/utils",
-  "version": "1.0.0-beta.0",
+  "version": "0.1.0-beta.0",
   "description": "Utils for Mixt monorepo",
   "scripts": {
     "build": "pika build",
@@ -27,5 +27,12 @@
   "license": "ISC",
   "devDependencies": {
     "typescript": "^3.7.5"
-  }
+  },
+  "dependencies": {
+    "cli": "^1.0.1",
+    "mkdirp": "^0.5.1",
+    "ncp": "^2.0.0",
+    "simple-git": "^1.107.0"
+  },
+  "peerDependencies": {}
 }

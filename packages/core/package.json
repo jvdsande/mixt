@@ -1,6 +1,6 @@
 {
   "name": "@mixt/core",
-  "version": "1.0.0-beta.0",
+  "version": "0.1.0-beta.0",
   "description": "A simple packager for Node mono-repo",
   "scripts": {
     "build": "pika build",
@@ -30,5 +30,11 @@
   "license": "ISC",
   "devDependencies": {
     "typescript": "^3.7.5"
-  }
+  },
+  "dependencies": {
+    "@mixt/commands": "^0.1.0-beta.0",
+    "@mixt/utils": "^0.1.0-beta.0",
+    "commander": "^2.19.0"
+  },
+  "peerDependencies": {}
 }
