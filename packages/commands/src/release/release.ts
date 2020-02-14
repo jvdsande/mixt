@@ -1,8 +1,8 @@
+import {fileUtils} from '@mixt/utils'
 import cli from 'cli'
-import path from 'path'
-import { fileUtils } from '@mixt/utils'
 
 import Command, {options} from 'command'
+import path from 'path'
 
 import buildPackages from 'release/steps/build-packages'
 import bumpPackagesVersions from 'release/steps/bump-packages-versions'
@@ -20,6 +20,15 @@ async function apply({ packages }) {
       await fileUtils.saveJson(path.resolve(pkg.src.path, 'package.json'), pkg.src.json)
       await fileUtils.saveJson(path.resolve(pkg.dist.path, 'package.json'), pkg.dist.json)
     }
+  }))
+}
+
+async function reload({ packages }) {
+  await Promise.all(packages.map(async (pkg) => {
+    // Get package dist json
+    pkg.dist.json = await fileUtils.getJson(path.resolve(pkg.dist.path, 'package.json'))
+    // Get package src json
+    pkg.src.json = await fileUtils.getJson(path.resolve(pkg.src.path, 'package.json'))
   }))
 }
 
@@ -76,6 +85,9 @@ export async function command({
 
   // Check if revert is needed
   await check({ packages: toReleasePackages, interrupted: interrupted || !allBuilt })
+
+  // Get built packages
+  await reload({ packages: toReleasePackages })
 
   // Inject dependencies to packages
   const allResolved = await resolvePackages({ packages: toReleasePackages, allPackages, root, global })
