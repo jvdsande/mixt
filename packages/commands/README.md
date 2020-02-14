@@ -96,6 +96,9 @@ If you specify a list of packages names as variadic argument, only those package
 ##### Available options
   `-s, --sources <sources>`:  Comma-separated list of source folders. Will only hoist packages in those sources.
 
+<br />
+<br />
+
 ## Cross-packages script handling commands:
 
 **Mixt** makes it easy to run commands in one or multiple managed packages.
@@ -125,6 +128,9 @@ Behaves just like `mixt run`, but takes a bash command to run in each packages i
   `-s, --sources <sources>` :  Comma-separated list of source folders. Will limit scope to those sources
 
   `-q, --quiet` :              Turn off logging for scripts
+
+<br />
+<br />
 
 ## Shorthands commands:
 
@@ -164,6 +170,9 @@ Shorthand for `mixt run test`. Will also match `mixt:test` scripts.
 
   `-q, --quiet` :              Turn off logging for scripts
   
+<br />
+<br />
+
 ## Release related commands:
 
 ### `mixt status [packages...]` :
