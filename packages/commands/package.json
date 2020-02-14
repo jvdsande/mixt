@@ -2,6 +2,9 @@
   "name": "@mixt/commands",
   "version": "0.1.0-beta.2",
   "description": "Commands for Mixt monorepo",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "pika build",
     "watch": "nodemon -e ts,js,tsx,jsx,json,yml --watch src --exec \"npm run build\"",
