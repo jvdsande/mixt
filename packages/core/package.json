@@ -1,10 +1,11 @@
 {
   "name": "@mixt/core",
-  "version": "0.1.0-beta.0",
+  "version": "0.1.0-beta.1",
   "description": "A simple packager for Node mono-repo",
   "scripts": {
     "build": "pika build",
-    "watch": "nodemon -e ts,js,tsx,jsx,json,yml --watch src --exec \"npm run build\""
+    "watch": "nodemon -e ts,js,tsx,jsx,json,yml --watch src --exec \"npm run build\"",
+    "release": "echo 'release core'"
   },
   "mixt": {
     "dist": "./pkg"
@@ -30,5 +31,11 @@
   "license": "ISC",
   "devDependencies": {
     "typescript": "^3.7.5"
-  }
+  },
+  "dependencies": {
+    "@mixt/commands": "^0.1.0-beta.1",
+    "@mixt/utils": "^0.1.0-beta.1",
+    "commander": "^2.19.0"
+  },
+  "peerDependencies": {}
 }

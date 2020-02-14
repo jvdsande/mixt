@@ -21,6 +21,7 @@ export const options = {
   sources:  ['-s, --sources <sources>', 'Comma-separated list of source folders. Your packages needs to be direct children of a source'],
   noBuild:  ['-B, --no-build', 'Do not build packages before releasing (not recommended)'],
   noTag:  ['-T, --no-tag', 'Do not add Git tag after releasing'],
+  noCommit: ['-C, --no-commit', 'Do not commit release to Git, only run scripts. Automatically adds "no-tag" flag'],
   quiet:  ['-q, --quiet', 'Turn off logging for scripts'],
   dist:  ['-d, --dist <dist>', 'Subdirectory holding the built package. Defaults to ./'],
   resolve:  ['-r, --resolve <resolve>', 'Resolve method to use from full|cheap|none. Defaults to full'],

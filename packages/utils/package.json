@@ -1,10 +1,11 @@
 {
   "name": "@mixt/utils",
-  "version": "0.1.0-beta.0",
+  "version": "0.1.0-beta.1",
   "description": "Utils for Mixt monorepo",
   "scripts": {
     "build": "pika build",
-    "watch": "nodemon -e ts,js,tsx,jsx,json,yml --watch src --exec \"npm run build\""
+    "watch": "nodemon -e ts,js,tsx,jsx,json,yml --watch src --exec \"npm run build\"",
+    "release": "echo 'release utils'"
   },
   "mixt": {
     "dist": "./pkg"
@@ -27,5 +28,13 @@
   "license": "ISC",
   "devDependencies": {
     "typescript": "^3.7.5"
-  }
+  },
+  "dependencies": {
+    "cli": "^1.0.1",
+    "mkdirp": "^0.5.1",
+    "ncp": "^2.0.0",
+    "rimraf": "^3.0.2",
+    "simple-git": "^1.107.0"
+  },
+  "peerDependencies": {}
 }

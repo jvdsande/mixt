@@ -7,7 +7,7 @@ import Command from 'command'
 
 /** Helper functions **/
 export async function getStatus({
-  root, packages, all,
+  root, packages, all, check,
 }) {
   const git = gitUtils.repository(root)
 
@@ -18,10 +18,12 @@ export async function getStatus({
   if(isRepo) {
     cli.info("Git repository found. Checking for modified files...")
 
-    const status = await git.status()
+    if(check) {
+      const status = await git.status()
 
-    if(status.files.length) {
-      cli.fatal("Found uncommitted work. Please commit before running this command!")
+      if (status.files.length) {
+        cli.fatal("Found uncommitted work. Please commit before running this command!")
+      }
     }
 
     await git.fetch()
@@ -63,7 +65,7 @@ export async function command({
   root, packages,
 }) {
   const modifiedPackages = await getStatus({
-    root, packages, all: false,
+    root, packages, all: false, check: true,
   })
 
   modifiedPackages.forEach(pkg => {
