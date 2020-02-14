@@ -53,6 +53,9 @@ for you.
 
   `-t, --git-tag-prefix <tagPrefix>` :  Append a custom prefix for generated Git tags. Defaults to none. Will be saved to configuration.
 
+<br />
+<br />
+
 ### `mixt add [source] <package>` :
 
 ##### Description
@@ -69,6 +72,9 @@ If the source parameter is omitted, the package will be added to the first sourc
   `-d, --dist <dist>` :        Subdirectory holding the built package. Defaults to `"./"`. Will be added to local config.
 
 
+<br />
+<br />
+
 ### `mixt list` :
 
 ##### Description
@@ -76,6 +82,9 @@ List all packages handled by **Mixt** and display basic information about them
 
 ##### Available options
   `-s, --sources <sources>`:  Comma-separated list of source folders. Will only list packages in those sources.
+
+<br />
+<br />
 
 ### `mixt hoist [packages...]` :
 
@@ -104,6 +113,9 @@ All packages are checked sequentially, so only one script ever runs at a time.
   `-q, --quiet` :              Turn off logging for scripts
 
 
+<br />
+<br />
+
 ### `mixt exec <command> [packages...]` :
 
 ##### Description
@@ -126,6 +138,9 @@ Shorthand for `mixt run build`. Will also match `mixt:build` scripts.
 
   `-q, --quiet` :              Turn off logging for scripts
   
+<br />
+<br />
+
 ### `mixt watch [packages...]` :
 
 ##### Description
@@ -135,6 +150,9 @@ Shorthand for `mixt run watch`. Will also match `mixt:watch`, `mixt:dev` and `de
   `-s, --sources <sources>` :  Comma-separated list of source folders. Will limit scope to those sources
 
   `-q, --quiet` :              Turn off logging for scripts
+
+<br />
+<br />
 
 ### `mixt test [packages...]` :
 
@@ -157,6 +175,9 @@ marked as changed by default.
 
 ##### Available options
   `-s, --sources <sources>` :  Comma-separated list of source folders. Will limit scope to those sources
+
+<br />
+<br />
 
 ### `mixt release [packages...]` :
 
