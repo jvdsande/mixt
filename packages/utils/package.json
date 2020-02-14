@@ -1,0 +1,32 @@
+{
+  "name": "@mixt/utils",
+  "version": "0.1.0-beta.2",
+  "description": "Utils for Mixt monorepo",
+  "scripts": {
+    "build": "pika build",
+    "watch": "nodemon -e ts,js,tsx,jsx,json,yml --watch src --exec \"npm run build\"",
+    "release": "cd ./pkg && npm publish"
+  },
+  "mixt": {
+    "dist": "./pkg"
+  },
+  "@pika/pack": {
+    "pipeline": [
+      [
+        "@pika/plugin-standard-pkg"
+      ],
+      [
+        "@pika/plugin-build-node"
+      ],
+      [
+        "@pika/plugin-build-types"
+      ]
+    ]
+  },
+  "repository": "https://github.com/jvdsande/mixt",
+  "author": "Jérémie van der Sande <jeremie.vandersande@gmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^3.7.5"
+  }
+}

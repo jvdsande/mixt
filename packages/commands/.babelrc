@@ -1,0 +1,31 @@
+{
+  "plugins": [
+    [
+      "root-import",
+      {
+        "paths": [
+          {
+            "rootPathSuffix": "./src/command",
+            "rootPathPrefix": "command"
+          },
+          {
+            "rootPathSuffix": "./src/management",
+            "rootPathPrefix": "management"
+          },
+          {
+            "rootPathSuffix": "./src/release",
+            "rootPathPrefix": "release"
+          },
+          {
+            "rootPathSuffix": "./src/script",
+            "rootPathPrefix": "script"
+          },
+          {
+            "rootPathSuffix": "./src/shorthands",
+            "rootPathPrefix": "shorthands"
+          }
+        ]
+      }
+    ]
+  ]
+}

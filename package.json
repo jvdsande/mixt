@@ -4,10 +4,7 @@
   "description": "Main repository for the Mixt packager",
   "main": "index.js",
   "scripts": {
-    "ln": "rm -rf node_modules/.bin/mixt && ln -s `pwd`/packages/node_modules/mixt/dist-node/index.bin.js node_modules/.bin/mixt",
-    "prebuild": "rm -rf packages/node_modules/mixt && cd packages/sources/mixt && pika-pack build && mv pkg ../../node_modules/mixt",
-
-    "dev:bootstrap": "mixt exec \"npm install\""
+    "ln": "rm -rf node_modules/.bin/mixt && ln -s `pwd`/packages/node_modules/@mixt/core/dist-node/index.bin.js node_modules/.bin/mixt"
   },
   "author": "",
   "license": "ISC",
@@ -19,9 +16,13 @@
     "@pika/plugin-bundle-node": "^0.6.0",
     "@pika/plugin-simple-bin": "^0.6.0",
     "@pika/plugin-standard-pkg": "^0.6.0",
-    "@pika/plugin-ts-standard-pkg": "^0.6.0"
+    "@pika/plugin-ts-standard-pkg": "^0.6.0",
+    "babel-plugin-root-import": "^6.4.1"
   },
   "dependencies": {
+    "@mixt/commands": "file:packages/commands/pkg",
+    "@mixt/core": "file:packages/core/pkg",
+    "@mixt/utils": "file:packages/utils/pkg",
     "add": "^2.0.6",
     "chokidar": "^2.1.1",
     "cli": "^1.0.1",
@@ -31,17 +32,14 @@
     "inquirer": "^6.2.2",
     "mkdirp": "^0.5.1",
     "ncp": "^2.0.0",
-    "rmrf": "^2.0.0",
+    "rimraf": "^3.0.2",
     "semver": "^5.6.0",
     "simple-git": "^1.107.0",
     "typescript": "^3.3.3"
   },
   "mixt": {
-    "packages": "packages",
     "sources": [
-      "builders",
-      "sources",
-      "samples"
+      "packages"
     ]
   }
 }
