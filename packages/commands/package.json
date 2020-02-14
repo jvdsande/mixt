@@ -5,7 +5,7 @@
   "scripts": {
     "build": "pika build",
     "watch": "nodemon -e ts,js,tsx,jsx,json,yml --watch src --exec \"npm run build\"",
-    "release": "echo 'release commands'"
+    "release": "cd ./pkg && npm publish"
   },
   "mixt": {
     "dist": "./pkg"
