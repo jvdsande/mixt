@@ -1,7 +1,7 @@
 import cli from 'cli'
 
-export default async function commitRevert({ packages, repo }) {
-  if(!repo) {
+export default async function commitRevert({ packages, repo, commit }) {
+  if(!repo || !commit) {
     return
   }
 

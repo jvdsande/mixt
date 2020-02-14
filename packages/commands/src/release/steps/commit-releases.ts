@@ -2,8 +2,8 @@ import cli from 'cli'
 
 import { processUtils } from '@mixt/utils'
 
-export default async function commitReleases({ repo, packages, tag, git }) {
-  if(!repo) {
+export default async function commitReleases({ repo, packages, tag, git, commit }) {
+  if(!repo || !commit) {
     return
   }
 
@@ -23,7 +23,10 @@ export default async function commitReleases({ repo, packages, tag, git }) {
 
   const tagTriggers = packages.map(pkg => async() => {
     try {
-      await repo.addTag(`${git.tagPrefix}${git.tagPrefix !== '' ? '-' : ''}${pkg.src.json.name}@${pkg.src.json.version}`)
+      await repo.addAnnotatedTag(
+        `${git.tagPrefix}${git.tagPrefix !== '' ? '-' : ''}${pkg.src.json.name}@${pkg.src.json.version}`,
+        `${pkg.src.json.name}: v${pkg.src.json.version}`
+      )
     } catch (err) {
       cli.error(`A tag with this version name already exists: ${pkg.src.json.name}@${pkg.src.json.version}. It has not been overwritten`)
     }

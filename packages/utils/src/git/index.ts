@@ -12,6 +12,7 @@ export function repository(rootDir) {
     checkIsRepo: promisify(git.checkIsRepo.bind(git)),
     branch: promisify(git.branch.bind(git)),
     addTag: promisify(git.addTag.bind(git)),
+    addAnnotatedTag: promisify(git.addAnnotatedTag.bind(git)),
     add: promisify(git.add.bind(git)),
     commit: promisify(git.commit.bind(git)),
     push: promisify(git.push.bind(git)),

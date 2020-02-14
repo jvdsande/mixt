@@ -34,12 +34,33 @@ async function injectDependencies({ root, allPackages, packages, global, kind })
 
   await Promise.all(packages.map(async (pkg) => {
     const resolve = pkg.options.resolve || global.resolve
+
+    if(resolve === 'none') {
+      return
+    }
+
     const peerDependencies = pkg[kind].json.peerDependencies || {}
     const dependencies = pkg[kind].json.dependencies || {}
+
+    // Get rid of all '*' dependencies, only used for cheap-resolving to the root's dependencies
+    Object.keys(peerDependencies).forEach(dep => {
+      if(peerDependencies[dep] === '*') {
+        peerDependencies[dep] = undefined
+      }
+    })
+    Object.keys(dependencies).forEach(dep => {
+      if(dependencies[dep] === '*') {
+        dependencies[dep] = undefined
+      }
+    })
 
     const resolved = []
     if(resolve === 'full') {
       resolved.push(...(await fullResolve({ path: pkg[kind].path })))
+    }
+
+    if(resolve === 'all') {
+      resolved.push(...(await cheapResolve({ json: rootJson })))
     }
 
     resolved.push(...(await cheapResolve({ json: pkg[kind].json })))
@@ -50,12 +71,15 @@ async function injectDependencies({ root, allPackages, packages, global, kind })
       peerDependencies: {},
     }
 
-    resolved.sort().forEach((dep) => {
+    resolved
+      .sort()
+      .filter((d, i, a) => a.indexOf(d) === i)
+      .forEach((dep) => {
       const pkg = packages.find(p => p.dist.json.name === dep)
       const allPkg = allPackages.find(p => p.dist.json.name === dep) || { dist: { json: { version: null } } }
       const pkgVersion = (pkg ? pkg.dist.json.version : allPkg.dist.json.version)
       const detectedVersion = (pkgVersion) ? '^' + pkgVersion : pkgVersion
-      const version = (detectedVersion || peerDependencies[dep] || dependencies[dep] || rootDependencies[dep])
+      const version = (peerDependencies[dep] || dependencies[dep] || detectedVersion || rootDependencies[dep])
 
       if(version) {
         if (peerDependencies[dep]) {

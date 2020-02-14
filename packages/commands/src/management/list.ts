@@ -18,7 +18,7 @@ async function command({
 /** Command export */
 export default function ListCommand(program) {
   Command(program, {
-    name: 'list [packages...]',
+    name: 'list',
     command,
   })
 }

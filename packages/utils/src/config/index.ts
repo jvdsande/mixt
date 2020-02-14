@@ -103,7 +103,7 @@ export async function getConfig(cmd, init) {
   const mergeSources = (sources) => sources
 
   // Get the list of current sources (command line arguments has highest priority)
-  const sources : string[] = [(cmd.sources && cmd.sources.split(',')), config.sources, json.sources, []]
+  const sources : string[] = [(cmd.sources && cmd.sources.split(',')), config.sources, json.sources, ['packages']]
     // Remove undefined sources
     .filter(filterUndefinedSources)
     // Get the first defined sources
@@ -116,7 +116,7 @@ export async function getConfig(cmd, init) {
     .map(getFullPathForSources)
 
   // Get the list of all sources (defined in configuration or through command line)
-  const allSources : string[] = [config.sources, json.sources, (cmd.sources && cmd.sources.split(',')), []]
+  const allSources : string[] = [config.sources, json.sources, (cmd.sources && cmd.sources.split(',')), ['packages']]
     // Remove undefined sources
     .filter(filterUndefinedSources)
     // Merge all sources together
@@ -153,6 +153,7 @@ export async function getConfig(cmd, init) {
 
   return {
     root: rootDir,
+    defaultSource: allSources[0],
     packages,
     allPackages,
     git: {

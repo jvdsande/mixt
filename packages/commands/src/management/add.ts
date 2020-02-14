@@ -10,11 +10,18 @@ import Command, {options} from 'command'
 import { hoist } from './hoist'
 
 /** Command function **/
-async function command({ source, package: pkg, allPackages, root, resolve, prefix, dist }) {
-  const pkgPath = path.resolve(root, source, pkg)
+async function command({ source: argSrc, package: argPkg, allPackages, root, resolve, prefix, dist, defaultSource }) {
+  if(!argPkg && !argSrc) {
+    cli.fatal('You must provide a package name')
+  }
+
+  const pkg = argPkg || argSrc
+  const source = argPkg ? argSrc : defaultSource
+
+  const pkgPath = path.resolve(root, source || defaultSource, pkg)
 
   // Create the package
-  cli.info(`Creating new package at '${source}/${pkg}'`)
+  cli.info(`Creating new package at '${source || defaultSource}/${pkg}'`)
   await fileUtils.mkdir(pkgPath)
   await processUtils.spawnCommand({
     cmd: 'npm init',
@@ -25,6 +32,10 @@ async function command({ source, package: pkg, allPackages, root, resolve, prefi
 
   if(!fs.existsSync(path.resolve(pkgPath, 'package.json'))) {
     cli.info('Package was not created, exiting')
+    const files = await fileUtils.readDir(pkgPath)
+    if(files.length < 1) {
+      await fileUtils.rm(pkgPath)
+    }
     return
   }
 
@@ -69,7 +80,7 @@ async function command({ source, package: pkg, allPackages, root, resolve, prefi
 /** Command export */
 export default function AddCommand(program) {
   Command(program, {
-    name: 'add <source> <package>',
+    name: 'add [source] [package]',
     options: [
       options.resolve,
       options.prefix,

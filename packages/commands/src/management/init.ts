@@ -27,7 +27,7 @@ async function command({ sources, prefix, resolve, gitBranch, gitTagPrefix, root
 
   // Prepare config
   const mixtConfig = {
-    sources,
+    sources: sources || ['packages'],
     resolve,
     prefix,
     git: undefined,
@@ -57,6 +57,9 @@ async function command({ sources, prefix, resolve, gitBranch, gitTagPrefix, root
       cli.info(`Adding source directory '${source}'`)
       await fileUtils.mkdir(path.resolve(root, source))
     }))
+  } else {
+    cli.info(`Adding source directory 'packages'`)
+    await fileUtils.mkdir(path.resolve(root, 'packages'))
   }
 
   cli.ok('Done')

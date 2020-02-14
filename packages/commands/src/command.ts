@@ -24,7 +24,7 @@ export const options = {
   noCommit: ['-C, --no-commit', 'Do not commit release to Git, only run scripts. Automatically adds "no-tag" flag'],
   quiet:  ['-q, --quiet', 'Turn off logging for scripts'],
   dist:  ['-d, --dist <dist>', 'Subdirectory holding the built package. Defaults to ./'],
-  resolve:  ['-r, --resolve <resolve>', 'Resolve method to use from full|cheap|none. Defaults to full'],
+  resolve:  ['-r, --resolve <resolve>', 'Resolve method to use from full|cheap|all|none. Defaults to full'],
   prefix:  ['-p, --prefix <prefix>', 'Prefix for preferred npm scripts. Defaults to mixt:'],
   gitBranch: ['-b, --git-branch <branch>', 'Specify the Git branch from which publishing is allowed. Defaults to "master"'],
   gitTagPrefix: ['-t, --git-tag-prefix <tagPrefix>', 'Append a custom prefix for generated Git tags. Defaults to none'],
