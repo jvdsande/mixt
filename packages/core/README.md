@@ -49,12 +49,12 @@ For a more thorough explanations of all commands, refer to the [command help pag
 
 **Mixt** provides a set of CLI commands for managing your monorepo.
 
-### `mixt init` :
+#### `mixt init` :
 
 Initializes a repository following **Mixt**'s structure. It calls `npm init` internally
 for you.
 
-### `mixt add [source] <package>` :
+#### `mixt add [source] <package>` :
 
 Adds a new package to your sources. There again, it calls `npm init` from within
 the new package's root directory.
@@ -63,11 +63,11 @@ If the source parameter is omitted, the package will be added to the first sourc
 
 To learn more about source folders, refer to [Customizing the structure](#customize-structure)
 
-### `mixt list` :
+#### `mixt list` :
 
 List all packages handled by **Mixt** and display basic information about them
 
-### `mixt hoist [packages...]` :
+#### `mixt hoist [packages...]` :
 
 Get all **Mixt**-managed packages and add them to the root's `package.json` as `file:` dependency
 
@@ -77,38 +77,38 @@ If you specify a list of packages names as variadic argument, only those package
 
 **Mixt** makes it easy to run commands in one or multiple managed packages.
 
-### `mixt run <script> [packages...]` :
+#### `mixt run <script> [packages...]` :
 
 Go through all managed packages (or packages given to the command), and execute the given NPM script if found.
 
 All packages are checked sequentially, so only one script ever runs at a time.
 
-### `mixt exec <command> [packages...]` :
+#### `mixt exec <command> [packages...]` :
 
 Behaves just like `mixt run`, but takes a bash command to run in each packages instead of an NPM script name.
 
 #### Shorthands commands:
 
-### `mixt build [packages...]` :
+#### `mixt build [packages...]` :
 
 Shorthand for `mixt run build`. Will also match `mixt:build` scripts.
 
-### `mixt watch [packages...]` :
+#### `mixt watch [packages...]` :
 
 Shorthand for `mixt run watch`. Will also match `mixt:watch`, `mixt:dev` and `dev` scripts.
 
-### `mixt test [packages...]` :
+#### `mixt test [packages...]` :
 
 Shorthand for `mixt run test`. Will also match `mixt:test` scripts.
 
 ### Release related commands:
 
-### `mixt status [packages...]` :
+#### `mixt status [packages...]` :
 
 Check against the latest Git tag to see which packages have been modified since. If no tag is found, all packages are
 marked as changed by default.
 
-### `mixt release [packages...]` :
+#### `mixt release [packages...]` :
 
 Helper command for gracefully handling your package releases. It provides a CLI workflow for bumping your packages versions,
 optionally builds your packages before release, etc... Here is the complete **Mixt** release flow :
