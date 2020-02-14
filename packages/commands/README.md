@@ -24,6 +24,9 @@ Prints the help page for a specific command
 
 Prints the currently installed version number
 
+<br />
+<br />
+
 ## Monorepo Management commands:
 
 **Mixt** provides a set of CLI commands for managing your monorepo.
