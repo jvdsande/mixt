@@ -102,6 +102,19 @@ If you specify a list of packages names as variadic argument, only those package
 <br />
 <br />
 
+### `mixt stub [packages...]` :
+
+##### Description
+Create an empty `package.json` at the dist root of each package, if it does not exist.
+
+Useful for CI environment where build requires `npm ci`, but `npm ci` requires packages to exist.
+
+##### Available options
+  `-s, --sources <sources>`:  Comma-separated list of source folders. Will only stub packages in those sources.
+
+<br />
+<br />
+
 ## Cross-packages script handling commands:
 
 **Mixt** makes it easy to run commands in one or multiple managed packages.
