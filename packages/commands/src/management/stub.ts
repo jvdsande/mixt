@@ -1,7 +1,7 @@
 import path from 'path'
 import cli from 'cli'
 
-import { fileUtils } from '@mixt/utils'
+import { fileUtils, processUtils } from '@mixt/utils'
 
 import Command from 'command'
 
@@ -9,14 +9,17 @@ import Command from 'command'
 async function command({
   packages,
 }) {
-  packages.forEach(pkg => {
+  const stubTriggers = packages.map(pkg => async () => {
     if(!pkg.dist.exists) {
       cli.info(`Creating stub for package ${pkg.name}`)
-      fileUtils.saveJson(path.resolve(pkg.dist.path, 'package.json'), { name: pkg.src.json.name })
+      await fileUtils.mkdir(pkg.dist.path)
+      await fileUtils.saveJson(path.resolve(pkg.dist.path, 'package.json'), { name: pkg.src.json.name })
     } else {
       cli.info(`Package ${pkg.name} already exists, no need to stub`)
     }
   })
+
+  await processUtils.chainedPromises(stubTriggers)
 }
 
 /** Command export */
