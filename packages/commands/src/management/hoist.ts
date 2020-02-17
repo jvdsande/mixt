@@ -26,12 +26,37 @@ export async function hoist({
     rootJson.dependencies[pkg.dist.json.name || pkg.src.json.name] = `file:${pkg.dist.relativePath}`
   })
 
+
+  // Get all mixt-handled packages to the top
+  const orderedDependencies = {}
+  const alphabeticallyOrderedDependencies = Object.keys(rootJson.dependencies).sort()
+  const toRemoveDependencies = []
+  alphabeticallyOrderedDependencies.forEach(dep => {
+    if(rootJson.dependencies[dep].startsWith('file:')) {
+      if(allPackages.find(p => p.src.json.name === dep || p.dist.json.name === dep)) {
+        orderedDependencies[dep] = rootJson.dependencies[dep]
+      } else {
+        toRemoveDependencies.push(dep)
+        cli.info(`Local package ${dep} is not handled by mixt anymore, removing from dependencies`)
+      }
+    }
+  })
+  alphabeticallyOrderedDependencies.forEach(dep => {
+    if(!rootJson.dependencies[dep].startsWith('file:')) {
+      orderedDependencies[dep] = rootJson.dependencies[dep]
+    }
+  })
+  rootJson.dependencies = orderedDependencies
+
   cli.info('Linking dependencies...')
   await fileUtils.saveJson(path.resolve(root, 'package.json'), rootJson)
 
   try {
     await Promise.all(packages.map(async (pkg) => {
       const name = pkg.dist.json.name || pkg.src.json.name
+      await fileUtils.rm(path.resolve(root, 'node_modules', name))
+    }))
+    await Promise.all(toRemoveDependencies.map(async (name) => {
       await fileUtils.rm(path.resolve(root, 'node_modules', name))
     }))
 
@@ -46,25 +71,7 @@ export async function hoist({
     cli.info("At least one package was not successfully linked. Maybe it wasn't built yet?")
   }
 
-
-  // Get all mixt-handled packages to the top
-  const orderedDependencies = {}
-  const alphabeticallyOrderedDependencies = Object.keys(rootJson.dependencies).sort()
-  alphabeticallyOrderedDependencies.forEach(dep => {
-    if(rootJson.dependencies[dep].startsWith('file:')) {
-      if(allPackages.find(p => p.src.json.name === dep || p.dist.json.name === dep)) {
-        orderedDependencies[dep] = rootJson.dependencies[dep]
-      } else {
-        cli.info(`Local package ${dep} is not handled by mixt anymore, removing from dependencies`)
-      }
-    }
-  })
-  alphabeticallyOrderedDependencies.forEach(dep => {
-    if(!rootJson.dependencies[dep].startsWith('file:')) {
-      orderedDependencies[dep] = rootJson.dependencies[dep]
-    }
-  })
-  rootJson.dependencies = orderedDependencies
+  // Save again to keep ordering
   await fileUtils.saveJson(path.resolve(root, 'package.json'), rootJson)
 
   cli.ok('Done!')
