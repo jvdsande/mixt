@@ -34,11 +34,5 @@
   "license": "ISC",
   "devDependencies": {
     "typescript": "^3.7.5"
-  },
-  "dependencies": {
-    "@mixt/commands": "^2.0.8",
-    "@mixt/utils": "^2.0.4",
-    "commander": "^2.19.0"
-  },
-  "peerDependencies": {}
+  }
 }
