@@ -114,7 +114,7 @@ export async function command({
   await revertResolve({ packages: toReleasePackages })
 
   // Commit revert to git
-  await commitRevert({ packages: toReleasePackages, repo, commit })
+  await commitRevert({ packages: toReleasePackages, repo, git, tag, commit })
 
   cli.ok("Done!")
 }
