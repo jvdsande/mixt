@@ -1,6 +1,6 @@
 {
   "name": "@mixt/core",
-  "version": "2.0.9",
+  "version": "2.0.10",
   "description": "A simple packager for Node mono-repo",
   "publishConfig": {
     "access": "public"
@@ -34,5 +34,11 @@
   "license": "ISC",
   "devDependencies": {
     "typescript": "^3.7.5"
-  }
+  },
+  "dependencies": {
+    "@mixt/commands": "^2.0.10",
+    "@mixt/utils": "^2.0.6",
+    "commander": "^2.19.0"
+  },
+  "peerDependencies": {}
 }
