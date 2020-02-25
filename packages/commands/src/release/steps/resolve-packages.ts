@@ -25,7 +25,7 @@ async function cheapResolve({ json }) {
   })
 }
 
-async function injectDependencies({ root, allPackages, packages, global, kind }) {
+async function injectDependencies({ root, allPackages, packages, global }) {
   const rootJson = await fileUtils.getJson(path.resolve(root, 'package.json'))
   const rootDependencies = {
     ...(rootJson.peerDependencies || {}),
@@ -39,8 +39,8 @@ async function injectDependencies({ root, allPackages, packages, global, kind })
       return
     }
 
-    const peerDependencies = pkg[kind].json.peerDependencies || {}
-    const dependencies = pkg[kind].json.dependencies || {}
+    const peerDependencies = { ...(pkg.dist.json.peerDependencies || {}) }
+    const dependencies = { ...(pkg.dist.json.dependencies || {}) }
 
     // Get rid of all '*' dependencies, only used for cheap-resolving to the root's dependencies
     Object.keys(peerDependencies).forEach(dep => {
@@ -56,17 +56,17 @@ async function injectDependencies({ root, allPackages, packages, global, kind })
 
     const resolved = []
     if(resolve === 'full') {
-      resolved.push(...(await fullResolve({ path: pkg[kind].path })))
+      resolved.push(...(await fullResolve({ path: pkg.dist.path })))
     }
 
     if(resolve === 'all') {
       resolved.push(...(await cheapResolve({ json: rootJson })))
     }
 
-    resolved.push(...(await cheapResolve({ json: pkg[kind].json })))
+    resolved.push(...(await cheapResolve({ json: pkg.dist.json })))
 
     const next = {
-      ...pkg[kind].json,
+      ...pkg.dist.json,
       dependencies: {},
       peerDependencies: {},
     }
@@ -88,15 +88,13 @@ async function injectDependencies({ root, allPackages, packages, global, kind })
           next.dependencies[dep] = version
         }
       } else {
-        if(kind === 'dist') {
           cli.error('Missing dependency: ' + dep)
           throw new Error('Missing dependency')
-        }
       }
     })
 
-    pkg[kind].oldJson = pkg[kind].json
-    pkg[kind].json = next
+    pkg.dist.oldJson = pkg.dist.json
+    pkg.dist.json = next
   }))
 }
 
@@ -104,8 +102,7 @@ export default async function resolvePackages({ packages, allPackages, root, glo
   cli.info('Resolving dependencies for packages')
 
   try {
-    await injectDependencies({root, allPackages, packages, global, kind: 'dist'})
-    await injectDependencies({root, allPackages, packages, global, kind: 'src'})
+    await injectDependencies({root, allPackages, packages, global})
   } catch(err) {
     cli.error('An error occurred while resolving dependencies')
     return false
