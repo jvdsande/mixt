@@ -13,6 +13,7 @@ export default async function commitRevert({ repo, packages, tag, git, commit })
 
   // Create post-release tag
   if(tag) {
+    cli.info("Creating Mixt head tag...")
     await repo.addAnnotatedTag(
       `${git.tagPrefix}${git.tagPrefix !== '' ? '-' : ''}mixt-head@${new Date().valueOf()}`,
     )

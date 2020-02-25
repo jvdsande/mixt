@@ -40,6 +40,7 @@ async function revert({ packages }) {
 }
 
 async function revertResolve({ packages }) {
+  cli.info('Reverting version injection...')
   await Promise.all(packages.map(async (pkg) => {
     await fileUtils.saveJson(path.resolve(pkg.src.path, 'package.json'), pkg.src.oldJson)
     await fileUtils.saveJson(path.resolve(pkg.dist.path, 'package.json'), pkg.dist.oldJson)
