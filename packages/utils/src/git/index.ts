@@ -33,7 +33,7 @@ export function repository(rootDir) {
 
       try {
         const tag = (await raw([
-          'describe', '--tags', '--abbrev=0'
+          'describe', '--tags', '--abbrev=0', '--match="mixt-head*"'
         ])).trim()
 
         return tag !== '' ? tag : undefined
