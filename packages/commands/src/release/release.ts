@@ -81,7 +81,7 @@ export async function command({
   await check({ packages: toReleasePackages, interrupted })
 
   // If needed, build all packages
-  const allBuilt = await buildPackages({ packages: toReleasePackages, build, quiet, global })
+  const allBuilt = await buildPackages({ packages: toReleasePackages, build, quiet, global, allPackages, root })
 
   // Check if revert is needed
   await check({ packages: toReleasePackages, interrupted: interrupted || !allBuilt })

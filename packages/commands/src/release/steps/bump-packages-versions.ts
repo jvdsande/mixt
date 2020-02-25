@@ -2,7 +2,7 @@ import cli from 'cli'
 import cliAsk from 'inquirer'
 import semver from 'semver'
 
-import {processUtils} from '@mixt/utils'
+import { processUtils } from '@mixt/utils'
 
 async function bump({ pkg }) {
   const { json } = pkg.src
@@ -19,7 +19,7 @@ async function bump({ pkg }) {
   let betaMinor = semver.inc(version, 'preminor', 'alpha')
   let betaPatch = semver.inc(version, 'prepatch', 'alpha')
 
-  if(prerelease && prerelease.length) {
+  if (prerelease && prerelease.length) {
     const patch = semver.patch(version)
     const minor = semver.minor(version)
     const major = semver.major(version)
@@ -31,12 +31,12 @@ async function bump({ pkg }) {
     betaPatch = major + '.' + minor + '.' + patch + '-' + prerelease[0] + '.' + (Number(prerelease[1]) + 1)
 
     // If we were already on a stable major, only update the prerelease of major
-    if(wasNotPatched && wasNotMinored) {
+    if (wasNotPatched && wasNotMinored) {
       betaMajor = betaPatch
     }
 
     // If we were on a stable minor, only update the prerelease of minor
-    if(wasNotPatched && wasNotMinored) {
+    if (wasNotPatched && wasNotMinored) {
       betaMinor = betaPatch
     }
   }
@@ -52,7 +52,7 @@ async function bump({ pkg }) {
     pageSize: 10,
   }])
 
-  while(nextVersion.version === 'Custom') {
+  while (nextVersion.version === 'Custom') {
     const customVersion = await cliAsk.prompt([{
       name: 'version',
       type: 'string',
@@ -62,7 +62,7 @@ async function bump({ pkg }) {
     if (semver.valid(customVersion.version)) {
       nextVersion = customVersion
     } else {
-      cli.error("Invalid version.")
+      cli.error('Invalid version.')
     }
   }
 
@@ -82,7 +82,7 @@ export default async function bumpPackagesVersions({ modifiedPackages }) {
 
   const toReleasePackages = modifiedPackages.filter(pkg => pkg.src.json.version !== 'Do not release')
 
-  if(!toReleasePackages.length) {
+  if (!toReleasePackages.length) {
     cli.info('No package to release')
     process.exit(0)
   }
