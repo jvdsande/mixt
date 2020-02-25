@@ -5,8 +5,8 @@ import Command, { options } from 'command'
 import { run } from 'script/run'
 
 /** Command function **/
-async function command({ packages, quiet, global }) {
-  const pkgs = await run({ packages, scripts: ['test'], quiet, prefix: true, global })
+async function command({ packages, quiet, global, allPackages, root }) {
+  const pkgs = await run({ packages, scripts: ['test'], quiet, prefix: true, global, allPackages, root })
 
   if(!pkgs.length) {
     cli.info(`No package implements script 'test', nothing to run`)

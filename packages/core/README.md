@@ -93,6 +93,8 @@ Behaves just like `mixt run`, but takes a bash command to run in each packages i
 
 Shorthand for `mixt run build`. Will also match `mixt:build` scripts.
 
+Additionally, `mixt build` also hoists built packages to ensure subsequent builds can proceed correctly.
+
 #### `mixt watch [packages...]` :
 
 Shorthand for `mixt run watch`. Will also match `mixt:watch`, `mixt:dev` and `dev` scripts.
@@ -242,7 +244,7 @@ Prefix to use for `build`, `watch` and `test` commands. Defaults to `mixt:`, so 
 This allows you to have a `build` script in your `package.json`, but hide it from **Mixt** by adding a `mixt:build` script to your scripts.
 
 #### `buildOrder` :
-Array of package names, allowing to mark packages which should be build before other in their source folder.
+Array of package names, allowing to mark packages which should be built before other in their source folder.
 
 If multiple packages from the same source are specified, then they will be built in the order specified.
 

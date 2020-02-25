@@ -3,6 +3,7 @@ import cli from 'cli'
 import { processUtils } from '@mixt/utils'
 
 import Command, { options } from 'command'
+import { hoist as hoistCommand } from 'management/hoist'
 
 /** Helper functions **/
 export async function detectScript({ pkg, scripts, prefix, global }) {
@@ -47,7 +48,7 @@ export async function executeScript({ pkg, script, quiet }) {
   }
 }
 
-export async function run({ packages, scripts, quiet, prefix, global, parallel = false }) {
+export async function run({ packages, allPackages, root, scripts, quiet, prefix, global, parallel = false, hoist = false }) {
   const pkgs = []
 
   const launchRuns = packages.map(pkg => async () => {
@@ -64,6 +65,15 @@ export async function run({ packages, scripts, quiet, prefix, global, parallel =
 
     // Execute the given script
     await executeScript({ pkg, script, quiet })
+
+    if(hoist) {
+      await hoistCommand({
+        packages: [pkg],
+        allPackages,
+        add: false,
+        root,
+      })
+    }
   })
 
   if(parallel) {
@@ -76,8 +86,17 @@ export async function run({ packages, scripts, quiet, prefix, global, parallel =
 }
 
 /** Command function **/
-async function command({ packages, script, quiet, global }) {
-  const pkgs = await run({ packages, scripts: [script], quiet, prefix: false, global })
+async function command({ packages, script, quiet, global, allPackages, root }) {
+  const pkgs = await run({
+    packages,
+    allPackages,
+    root,
+    scripts: [script],
+    quiet,
+    prefix: false,
+    global,
+    hoist: false
+  })
 
   if(!pkgs.length) {
     cli.info(`No package implements script '${script}', nothing to run`)
