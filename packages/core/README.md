@@ -217,6 +217,7 @@ Here is a fully configured **Mixt** instance, with all the default values:
   "sources": ["packages"],
   "resolve": "full",
   "prefix": "mixt:",
+  "buildOrder": [],
   "git": {
     "branch": "master",
     "tagPrefix": ""
@@ -239,6 +240,11 @@ Can be one of:
 #### `prefix` :
 Prefix to use for `build`, `watch` and `test` commands. Defaults to `mixt:`, so that `mixt:build` takes precedence over `build`, for instance.
 This allows you to have a `build` script in your `package.json`, but hide it from **Mixt** by adding a `mixt:build` script to your scripts.
+
+#### `buildOrder` :
+Array of package names, allowing to mark packages which should be build before other in their source folder.
+
+If multiple packages from the same source are specified, then they will be built in the order specified.
 
 #### `git.branch` :
 The branch from which the `mixt release` command is allowed
