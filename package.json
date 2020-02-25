@@ -41,6 +41,9 @@
   "mixt": {
     "sources": [
       "packages"
+    ],
+    "buildOrder": [
+      "utils"
     ]
   }
 }

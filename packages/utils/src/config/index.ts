@@ -21,14 +21,14 @@ async function getPackageJson(source) {
   }
 }
 
-async function extractPackages(sources, root) {
+async function extractPackages(sources, root, buildOrder) {
   // Go through each source
   return (await Promise.all(sources.map(async source => {
     // For each sources dir, get a list of packages
     const packagesNames = await readDir(source)
 
     // Go through each packages
-    return await Promise.all(packagesNames.map(async name => {
+    const packages = await Promise.all(packagesNames.map(async name => {
       // Get the package path
       const srcPath = path.resolve(source, name)
 
@@ -65,6 +65,21 @@ async function extractPackages(sources, root) {
         dist,
       }
     }))
+
+    return packages.sort((a, b) => {
+      const aSrcNameOrderIndex =  a.src.exists ? buildOrder.indexOf(a.src.json.name) : -1
+      const aDistNameOrderIndex = a.dist.exists ? buildOrder.indexOf(a.dist.json.name) : -1
+      const aNameOrderIndex = buildOrder.indexOf(a.name)
+
+      const bSrcNameOrderIndex =  b.src.exists ? buildOrder.indexOf(b.src.json.name) : -1
+      const bDistNameOrderIndex = b.dist.exists ? buildOrder.indexOf(b.dist.json.name) : -1
+      const bNameOrderIndex = buildOrder.indexOf(b.name)
+
+      const aIndex = Math.min(...[aSrcNameOrderIndex, aDistNameOrderIndex, aNameOrderIndex].filter(n => n > -1), Number.MAX_SAFE_INTEGER)
+      const bIndex = Math.min(...[bSrcNameOrderIndex, bDistNameOrderIndex, bNameOrderIndex].filter(n => n > -1), Number.MAX_SAFE_INTEGER)
+
+      return aIndex - bIndex
+    })
   })))
     .flat(2)
 }
@@ -128,14 +143,16 @@ export async function getConfig(cmd, init) {
     // Get full path
     .map(getFullPathForSources)
 
-  const packages = (await extractPackages(sources.map(s => path.resolve(rootDir, s)), rootDir))
+  const buildOrder = config.buildOrder || json.buildOrder || []
+
+  const packages = (await extractPackages(sources.map(s => path.resolve(rootDir, s)), rootDir, buildOrder))
     .filter(p => !cmd.packages
       || !cmd.packages.length
       || cmd.packages.includes(p.name)
       || cmd.packages.includes(p.src.json.name)
       || cmd.packages.includes(p.dist.json.name)
     )
-  const allPackages = await extractPackages(allSources.map(s => path.resolve(rootDir, s)), rootDir)
+  const allPackages = await extractPackages(allSources.map(s => path.resolve(rootDir, s)), rootDir, buildOrder)
 
   // Get git configuration
   const gitBranch     = cmd.gitBranch || (config.git && config.git.branch) || (json.git && json.git.branch) || 'master'
