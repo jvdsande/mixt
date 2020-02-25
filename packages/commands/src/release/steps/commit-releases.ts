@@ -33,4 +33,5 @@ export default async function commitReleases({ repo, packages, tag, git, commit 
   })
 
   await processUtils.chainedPromises(tagTriggers)
+  cli.info("Git tags created")
 }
