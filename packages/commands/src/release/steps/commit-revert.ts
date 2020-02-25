@@ -17,6 +17,7 @@ export default async function commitRevert({ repo, packages, tag, git, commit })
     try {
       await repo.addAnnotatedTag(
         `${git.tagPrefix}${git.tagPrefix !== '' ? '-' : ''}mixt-head@${new Date().valueOf()}`,
+        'Mixt head tag',
       )
     } catch(err) {
       cli.error('An error occurred while creating head tag')
