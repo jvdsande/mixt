@@ -38,7 +38,6 @@ export function repository(rootDir) {
 
         return tag !== '' ? tag : undefined
       } catch(err) {
-        console.log({ err: err.message })
       }
     },
   })
