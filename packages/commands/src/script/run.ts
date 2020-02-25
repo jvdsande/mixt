@@ -71,7 +71,7 @@ export async function run({ packages, allPackages, root, scripts, quiet, prefix,
       await hoistCommand({
         packages: [pkg],
         allPackages,
-        add: false,
+        add: true,
         root,
       })
     }

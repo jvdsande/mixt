@@ -18,6 +18,7 @@ export default async function buildPackages({ packages, build, quiet, global, al
     })
   } catch(err) {
     cli.error('An error occurred during build, aborting release')
+    cli.error(err)
     return false
   }
 
