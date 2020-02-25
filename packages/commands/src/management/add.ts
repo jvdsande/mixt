@@ -80,6 +80,7 @@ async function command({ source: argSrc, package: argPkg, allPackages, root, res
 /** Command export */
 export default function AddCommand(program) {
   Command(program, {
+    init: true,
     name: 'add [source] [package]',
     options: [
       options.resolve,
