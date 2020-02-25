@@ -63,6 +63,18 @@ async function extractPackages(sources, root, buildOrder) {
         options,
         src,
         dist,
+        async reload() {
+          // Retrieve the package's package.json
+          const srcJsonReloaded = await getPackageJson(srcPath)
+          // Retrieve the dist's package.json
+          const distJsonReloaded = await getPackageJson(distPath)
+
+          src.exists = !!srcJsonReloaded.name
+          src.json = srcJsonReloaded
+
+          dist.exists = !!distJsonReloaded.name
+          dist.json = distJsonReloaded
+        }
       }
     }))
 

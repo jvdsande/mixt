@@ -67,6 +67,7 @@ export async function run({ packages, allPackages, root, scripts, quiet, prefix,
     await executeScript({ pkg, script, quiet })
 
     if(hoist) {
+      await pkg.reload()
       await hoistCommand({
         packages: [pkg],
         allPackages,
