@@ -14,9 +14,14 @@ export default async function commitRevert({ repo, packages, tag, git, commit })
   // Create post-release tag
   if(tag) {
     cli.info("Creating Mixt head tag...")
-    await repo.addAnnotatedTag(
-      `${git.tagPrefix}${git.tagPrefix !== '' ? '-' : ''}mixt-head@${new Date().valueOf()}`,
-    )
+    try {
+      await repo.addAnnotatedTag(
+        `${git.tagPrefix}${git.tagPrefix !== '' ? '-' : ''}mixt-head@${new Date().valueOf()}`,
+      )
+    } catch(err) {
+      cli.error('An error occurred while creating head tag')
+      cli.error(err)
+    }
   }
 
   cli.info("Pushing changes...")
