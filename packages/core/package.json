@@ -1,6 +1,6 @@
 {
   "name": "@mixt/core",
-  "version": "2.0.11",
+  "version": "2.0.12",
   "description": "A simple packager for Node mono-repo",
   "publishConfig": {
     "access": "public"
