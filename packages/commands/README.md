@@ -176,6 +176,19 @@ Shorthand for `mixt run watch`. Will also match `mixt:watch`, `mixt:dev` and `de
 <br />
 <br />
 
+### `mixt start [packages...]` :
+
+##### Description
+Shorthand for `mixt run start`. Will also match `mixt:start` scripts.
+
+##### Available options
+  `-s, --sources <sources>` :  Comma-separated list of source folders. Will limit scope to those sources
+
+  `-q, --quiet` :              Turn off logging for scripts
+
+<br />
+<br />
+
 ### `mixt test [packages...]` :
 
 ##### Description
@@ -208,7 +221,7 @@ marked as changed by default.
 
 ##### Description
 Helper command for gracefully handling your package releases. It provides a CLI workflow for bumping your packages versions,
-optionally builds your packages before release, etc... Here is the complete **Mixt** release flow :
+optionally builds your packages before release, etc... Here is the complete **Mixt** release flow:
  - **Check repository:** only allow releases from the configured branch
  - **Get modified packages:** find packages in need of a new release
  - **Bump packages versions:** ask you for the next version of each packages
@@ -238,5 +251,36 @@ That is quite a lot, but it is what is most often needed for any releases. Here 
   `-t, --git-tag-prefix <tagPrefix>` :  Append a custom prefix for generated Git tags. Defaults to none
   
   `-b, --git-branch <branch>` :         Specify the Git branch from which publishing is allowed. Defaults to "master"
+  
+  `-q, --quiet` :                       Turn off logging for scripts
+
+<br />
+<br />
+
+### `mixt bundle [package]` :
+
+##### Description
+Helper command for bundling a package with all its dependency cleanly hoisted to its level. This command is aimed
+at helping creating a container (i.e. Docker) aimed at a single application inside a monorepo. It does not transpile
+the code in any way, it only isolates a package from the rest of the repository while keeping it launchable.
+
+Here is the complete **Mixt** bundle flow:
+ - **Copy dist to bundle:** copy the built and resolved dist package to a `bundle` folder. Will crash if the `bundle` folder already exists
+ - **Resolve dependencies:** find all dependencies of the copied dist package
+ - **Copy local dependencies:** local dependencies dist are copied to a `local_modules` folder inside `bundle`
+ - **Copy common dependencies:** copy common dependencies from the root's `node_modules` to the bundle's `node_modules`. This uses `package-lock.json`
+                                 in order to find nested dependencies
+ - **Merge node_modules:** merge the package and dist `node_modules`
+ - **Resolve local dependencies:** repeat steps 2-4 for each local dependency
+ 
+ This way, all dependencies are hoisted up to the `bundle` folder, which can then be safely packaged in a container or shipped
+ individually.
+
+##### Available options
+  `-s, --sources <sources>` :           Comma-separated list of source folders. Will search for the package to bundle inside those sources
+  
+  `-r, --resolve <resolve>` :           Resolve method to use from full|cheap|all|none. Defaults to full
+  
+  `-B, --no-build` :                    Do not build packages before bundling
   
   `-q, --quiet` :                       Turn off logging for scripts

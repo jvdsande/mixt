@@ -164,6 +164,11 @@ export async function getConfig(cmd, init) {
       || cmd.packages.includes(p.src.json.name)
       || cmd.packages.includes(p.dist.json.name)
     )
+    .filter(p => !cmd.package
+      || cmd.package === p.name
+      || cmd.package === p.src.json.name
+      || cmd.package === p.dist.json.name
+    )
   const allPackages = await extractPackages(allSources.map(s => path.resolve(rootDir, s)), rootDir, buildOrder)
 
   // Get git configuration

@@ -16,13 +16,13 @@
   "@pika/pack": {
     "pipeline": [
       [
-        "@pika/plugin-standard-pkg"
+        "@pika/plugin-ts-standard-pkg"
+      ],
+      [
+        "@harmonyjs/pika-plugin-ts-resolve-imports"
       ],
       [
         "@pika/plugin-build-node"
-      ],
-      [
-        "@pika/plugin-build-types"
       ]
     ]
   },
@@ -30,6 +30,6 @@
   "author": "Jérémie van der Sande <jeremie.vandersande@gmail.com>",
   "license": "ISC",
   "devDependencies": {
-    "typescript": "^3.7.5"
+    "typescript": "^3.8.3"
   }
 }

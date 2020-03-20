@@ -1,4 +1,5 @@
-import fs from "fs"
+import fs from 'fs'
+import path from 'path'
 import { promisify } from 'util'
 
 import cli from 'cli'
@@ -9,9 +10,18 @@ import rmf from 'rimraf'
 export const readDir = promisify(fs.readdir)
 export const readFile = promisify(fs.readFile)
 export const writeFile = promisify(fs.writeFile)
-export const mkdir = promisify(mkdirp)
-export const cp = promisify(ncp)
+export const mkdir = mkdirp
+export const cp = (source: string, dest: string) => new Promise((resolve) => ncp(
+  source,
+  dest,
+  {
+    filter: (file) => !file.startsWith(dest),
+    dereference: true,
+  },
+  resolve,
+))
 export const rm = promisify(rmf)
+export const exists = promisify(fs.exists)
 
 const open = promisify(fs.open)
 const close = promisify(fs.close)

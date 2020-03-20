@@ -1,5 +1,5 @@
 import cli from 'cli'
-import path from "path"
+import path from 'path'
 import depcheck from 'depcheck'
 
 import { fileUtils } from '@mixt/utils'

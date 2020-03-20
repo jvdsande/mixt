@@ -10,6 +10,8 @@ export default async function releasePackages({ packages, global, quiet }) {
       packages,
       global,
       quiet,
+      allPackages: [],
+      root: {},
     })
   } catch(err) {
     cli.error('An error occurred during release, reverting versions')

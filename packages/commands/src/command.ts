@@ -29,6 +29,7 @@ export const options = {
   gitBranch: ['-b, --git-branch <branch>', 'Specify the Git branch from which publishing is allowed. Defaults to "master"'],
   gitTagPrefix: ['-t, --git-tag-prefix <tagPrefix>', 'Append a custom prefix for generated Git tags. Defaults to none'],
   all: ['-a, --all', 'Whether to release packages that have not changed on Git'],
+  bundle: ['-b, --bundle <bundle>', 'Name of the folder to use for bundling. Relative path is relative from package root, absolute path is absolute. Defaults to "bundle"'],
 }
 
 
@@ -61,6 +62,10 @@ export default function Command(program, {
       if(restArgs[0] === 'packages') {
         cmd.packages = args[0]
       }
+    }
+
+    if(commandArgs['package']) {
+      cmd.package = commandArgs['package']
     }
 
     const config = await configUtils.getConfig(cmd, init)

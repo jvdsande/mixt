@@ -4,14 +4,14 @@ import cli from 'cli'
 import Command, {options} from 'command'
 import path from 'path'
 
-import buildPackages from 'release/steps/build-packages'
-import bumpPackagesVersions from 'release/steps/bump-packages-versions'
-import commitReleases from 'release/steps/commit-releases'
-import commitRevert from 'release/steps/commit-revert'
-import getModifiedPackages from 'release/steps/get-modified-packages'
-import releasePackages from 'release/steps/release-packages'
-import resolvePackages from 'release/steps/resolve-packages'
-import validateRepository from 'release/steps/validate-repository'
+import buildPackages from 'release/release-steps/build-packages'
+import bumpPackagesVersions from 'release/release-steps/bump-packages-versions'
+import commitReleases from 'release/release-steps/commit-releases'
+import commitRevert from 'release/release-steps/commit-revert'
+import getModifiedPackages from 'release/release-steps/get-modified-packages'
+import releasePackages from 'release/release-steps/release-packages'
+import resolvePackages from 'release/release-steps/resolve-packages'
+import validateRepository from 'release/release-steps/validate-repository'
 
 /** Helper functions **/
 async function apply({ packages }) {
