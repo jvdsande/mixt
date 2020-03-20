@@ -278,7 +278,6 @@ export default function BundleCommand(program) {
   Command(program, {
     name: 'bundle [package]',
     options: [
-      options.noBuild,
       options.quiet,
       options.resolve,
       options.bundle,

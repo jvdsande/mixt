@@ -266,11 +266,11 @@ the code in any way, it only isolates a package from the rest of the repository 
 
 Here is the complete **Mixt** bundle flow:
  - **Copy dist to bundle:** copy the built and resolved dist package to a `bundle` folder. Will crash if the `bundle` folder already exists
+ - **Merge node_modules:** merge the package and dist `node_modules`
  - **Resolve dependencies:** find all dependencies of the copied dist package
  - **Copy local dependencies:** local dependencies dist are copied to a `local_modules` folder inside `bundle`
  - **Copy common dependencies:** copy common dependencies from the root's `node_modules` to the bundle's `node_modules`. This uses `package-lock.json`
                                  in order to find nested dependencies
- - **Merge node_modules:** merge the package and dist `node_modules`
  - **Resolve local dependencies:** repeat steps 2-4 for each local dependency
  
  This way, all dependencies are hoisted up to the `bundle` folder, which can then be safely packaged in a container or shipped
@@ -280,7 +280,5 @@ Here is the complete **Mixt** bundle flow:
   `-s, --sources <sources>` :           Comma-separated list of source folders. Will search for the package to bundle inside those sources
   
   `-r, --resolve <resolve>` :           Resolve method to use from full|cheap|all|none. Defaults to full
-  
-  `-B, --no-build` :                    Do not build packages before bundling
   
   `-q, --quiet` :                       Turn off logging for scripts

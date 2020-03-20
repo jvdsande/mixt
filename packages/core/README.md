@@ -127,6 +127,24 @@ optionally builds your packages before release, etc... Here is the complete **Mi
  
 That is quite a lot, but it is what is most often needed for any releases. Here all is taken care of for you in one simple command.
 
+#### `mixt bundle [package]` :
+
+Helper command for bundling a package with all its dependency cleanly hoisted to its level. This command is aimed
+at helping creating a container (i.e. Docker) aimed at a single application inside a monorepo. It does not transpile
+the code in any way, it only isolates a package from the rest of the repository while keeping it launchable.
+
+Here is the complete **Mixt** bundle flow:
+ - **Copy dist to bundle:** copy the built and resolved dist package to a `bundle` folder. Will crash if the `bundle` folder already exists
+ - **Merge node_modules:** merge the package and dist `node_modules`
+ - **Resolve dependencies:** find all dependencies of the copied dist package
+ - **Copy local dependencies:** local dependencies dist are copied to a `local_modules` folder inside `bundle`
+ - **Copy common dependencies:** copy common dependencies from the root's `node_modules` to the bundle's `node_modules`. This uses `package-lock.json`
+                                 in order to find nested dependencies
+ - **Resolve local dependencies:** repeat steps 2-4 for each local dependency
+ 
+ This way, all dependencies are hoisted up to the `bundle` folder, which can then be safely packaged in a container or shipped
+ individually.
+
 
 ## Dependency Handling <a name="dependency-handling"></a>
 
