@@ -1,6 +1,6 @@
 {
   "name": "@mixt/utils",
-  "version": "2.0.10",
+  "version": "2.0.11",
   "description": "Utils for Mixt monorepo",
   "publishConfig": {
     "access": "public"
