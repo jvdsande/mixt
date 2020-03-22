@@ -1,3 +1,4 @@
+import fs from 'fs'
 import cli from 'cli'
 import path from 'path'
 import depcheck from 'depcheck'
@@ -98,8 +99,10 @@ async function getCommonAndLocalDeps({ pkg, resolve, allPackages }) {
   return deps
 }
 
-async function getCommonNestedDeps({ packages, packageLock }) {
-  const dependencies = []
+async function getCommonNestedDeps({ packages, packageLock, dependencies = [] }) {
+  if(!packageLock.dependencies) {
+    return
+  }
 
   while(packages.length) {
     const current = [...packages]
@@ -108,15 +111,27 @@ async function getCommonNestedDeps({ packages, packageLock }) {
       // Add dependency
       dependencies.push(pkg)
 
+      const dep = Object.entries(packageLock.dependencies).find(([d]) => d === pkg)
+
+      if(!dep) {
+        return
+      }
+
       // Check pkg deps
-      const info : any = Object.entries(packageLock.dependencies).find(([d]) => d === pkg)[1]
+      const info : any = dep[1]
 
-      const deps = Object.keys(info.requires || {})
+      const requires = Object.keys(info.requires || {})
 
-      deps.forEach(dep => {
+      requires.forEach(dep => {
         if(!dependencies.includes(dep)) {
           packages.push(dep)
         }
+      })
+
+      getCommonNestedDeps({
+        packages: requires,
+        packageLock: info,
+        dependencies,
       })
     })
   }
@@ -172,15 +187,11 @@ async function bundleLocalDep({
     }
   }))
 
-  if(toBundleLocalDeps) {
-    dependencies.local.forEach((dep) => {
-      if (!toBundleLocalDeps.includes(dep) && !checkedLocalDeps.includes(dep)) {
-        toBundleLocalDeps.push(dep)
-      }
-    })
-  }
-
-  return dependencies
+  dependencies.local.forEach((dep) => {
+    if (!toBundleLocalDeps.includes(dep) && !checkedLocalDeps.includes(dep)) {
+      toBundleLocalDeps.push(dep)
+    }
+  })
 }
 
 async function bundleLocalDeps({
@@ -217,6 +228,50 @@ async function bundleLocalDeps({
   }
 }
 
+async function findAllPeerDependencies({ nodeModules }) {
+  const packageJsons : string[] = await new Promise((resolve, reject) => {
+    const walk = (dir, done) => {
+      fs.readdir(dir, function(err, list) {
+        let results = [];
+        if (err) return reject(err);
+        let pending = list.length;
+        if (!pending) return done(results);
+        list.forEach(function (file) {
+          file = path.resolve(dir, file);
+          fs.stat(file, function (err, stat) {
+            if (stat && stat.isDirectory()) {
+              walk(file, function (res) {
+                results = results.concat(res);
+                if (!--pending) done(results);
+              });
+            } else {
+              if(file && file.endsWith('package.json')) {
+                results.push(file);
+              }
+              if (!--pending) done(results);
+            }
+          })
+        })
+      })
+    }
+    walk(nodeModules, resolve)
+  })
+
+  const peerDependencies = []
+  await Promise.all(packageJsons.map(async (jsonPath) => {
+    const json = await fileUtils.getJson(jsonPath)
+    if(json && json.peerDependencies) {
+      Object.keys(json.peerDependencies).forEach(dep => {
+        if(!peerDependencies.includes(dep)) {
+          peerDependencies.push(dep)
+        }
+      })
+    }
+  }))
+
+  return peerDependencies
+}
+
 /** Command function **/
 export async function command({
   root, allPackages, packages,
@@ -244,10 +299,12 @@ export async function command({
     cli.fatal('package-lock.json was not found, bundle is not possible')
   }
 
+  // Bundle main package
+  const localDependencies = []
   const dependencies = await bundleLocalDep({
     dependency: packages[0],
     bundlePath,
-    toBundleLocalDeps: undefined,
+    toBundleLocalDeps: localDependencies,
     checkedLocalDeps,
     checkedCommonDeps,
     rootNodeModules,
@@ -259,8 +316,9 @@ export async function command({
 
   cli.info('Bundling local dependencies')
 
+  // Bundle all needed local packages
   await bundleLocalDeps({
-    localDependencies: dependencies.local,
+    localDependencies,
     checkedLocalDeps,
     checkedCommonDeps,
     rootNodeModules,
@@ -269,6 +327,45 @@ export async function command({
     global,
     allPackages,
   })
+
+  // Check for peerDependencies
+  cli.info('Copying peer dependencies')
+  const peerDependencies = await findAllPeerDependencies({ nodeModules: bundleNodeModules })
+
+  cli.info('Copying ' + (peerDependencies.length) + ' common peer deps')
+
+  const nestedDependencies = await getCommonNestedDeps({ packages: peerDependencies, packageLock })
+
+  cli.info('Found ' + nestedDependencies.length + ' nested dependencies, copying...')
+
+  await Promise.all(nestedDependencies.map(async (dep) => {
+    if(!checkedCommonDeps.includes(dep)) {
+      checkedCommonDeps.push(dep)
+
+      // Peer deps can be either in root node_modules, or in one of the copied local packages node_modules
+      const possiblePaths = [
+        path.resolve(bundleNodeModules, dep),
+        path.resolve(rootNodeModules, dep),
+      ]
+
+      checkedLocalDeps.forEach(d => {
+        if(dep !== packages[0]) {
+          possiblePaths.push(path.resolve(bundleNodeModules, d.dist.json.name, 'node_modules', dep))
+        }
+      })
+
+      const depPath = possiblePaths.find(p => fs.existsSync(p))
+
+      if(!depPath) {
+        cli.fatal('Dependency "' + dep + '" is missing, it is not possible to create a clean bundle')
+      }
+
+      if(depPath !== path.resolve(bundleNodeModules, dep)) {
+        await fileUtils.mkdir(path.resolve(bundleNodeModules, dep))
+        await fileUtils.cp(depPath, path.resolve(bundleNodeModules, dep))
+      }
+    }
+  }))
 
   cli.ok("Done!")
 }

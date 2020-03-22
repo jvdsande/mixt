@@ -20,10 +20,10 @@
     "babel-plugin-root-import": "^6.4.1"
   },
   "dependencies": {
-    "@harmonyjs/pika-plugin-ts-resolve-imports": "^1.0.0-rc2.3",
     "@mixt/commands": "file:packages/commands/pkg",
     "@mixt/core": "file:packages/core/pkg",
     "@mixt/utils": "file:packages/utils/pkg",
+    "@harmonyjs/pika-plugin-ts-resolve-imports": "^1.0.0-rc2.3",
     "@types/ncp": "^2.0.3",
     "add": "^2.0.6",
     "cli": "^1.0.1",
