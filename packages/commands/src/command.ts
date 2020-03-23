@@ -30,6 +30,7 @@ export const options = {
   gitTagPrefix: ['-t, --git-tag-prefix <tagPrefix>', 'Append a custom prefix for generated Git tags. Defaults to none'],
   all: ['-a, --all', 'Whether to release packages that have not changed on Git'],
   bundle: ['-b, --bundle <bundle>', 'Name of the folder to use for bundling. Relative path is relative from package root, absolute path is absolute. Defaults to "bundle"'],
+  hoist: ['-h, --hoist', 'Hoist package after command is finished']
 }
 
 

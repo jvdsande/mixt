@@ -1,6 +1,7 @@
 import cli from 'cli'
+import path from 'path'
 
-import { processUtils } from '@mixt/utils'
+import { processUtils, fileUtils } from '@mixt/utils'
 
 import Command, { options } from 'command'
 import { hoist as hoistCommand } from 'management/hoist'
@@ -66,14 +67,18 @@ export async function run({ packages, allPackages, root, scripts, quiet, prefix,
     // Execute the given script
     await executeScript({ pkg, script, quiet })
 
-    if(hoist) {
-      await pkg.reload()
-      await hoistCommand({
-        packages: [pkg],
-        allPackages,
-        add: true,
-        root,
-      })
+    if(hoist || global.hoist) {
+      const rootJson = await fileUtils.getJson(path.resolve(root, 'package.json'))
+
+      if(!rootJson.dependencies[pkg.dist.json.name] || global.hoist) {
+        await pkg.reload()
+        await hoistCommand({
+          packages: [pkg],
+          allPackages,
+          add: true,
+          root,
+        })
+      }
     }
   })
 
@@ -109,6 +114,7 @@ export default function RunCommand(program) {
   Command(program, {
     name: 'run <script> [packages...]',
     options: [
+      options.hoist,
       options.quiet,
     ],
     command,

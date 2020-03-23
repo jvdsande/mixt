@@ -178,6 +178,7 @@ export async function getConfig(cmd, init) {
   // Get global flags
   const prefix  = (cmd.prefix) || (config.prefix) || (json.prefix) || 'mixt:'
   const resolve = (cmd.resolve) || (config.resolve) || (json.resolve) || 'full'
+  const hoist = (cmd.hoist )
 
   if(!init && !packages.length) {
     cli.info('No handled package found, exiting early')
@@ -197,6 +198,7 @@ export async function getConfig(cmd, init) {
     global: {
       prefix,
       resolve,
+      hoist,
     }
   }
 }
