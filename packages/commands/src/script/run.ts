@@ -57,15 +57,12 @@ export async function run({ packages, allPackages, root, scripts, quiet, prefix,
     const script = await detectScript({ pkg, scripts, prefix, global })
 
     // If a package does not have our script, ignore it
-    if(!script) {
-      return
+    if(script) {cli.info(`Found script '${script}' in '${pkg.name}'`)
+      pkgs.push(pkg)
+
+      // Execute the given script
+      await executeScript({ pkg, script, quiet })
     }
-
-    cli.info(`Found script '${script}' in '${pkg.name}'`)
-    pkgs.push(pkg)
-
-    // Execute the given script
-    await executeScript({ pkg, script, quiet })
 
     if(hoist || global.hoist) {
       const rootJson = await fileUtils.getJson(path.resolve(root, 'package.json'))
