@@ -1,29 +1,7 @@
 import cli from 'cli'
 import path from 'path'
-import depcheck from 'depcheck'
 
-import { fileUtils } from '@mixt/utils'
-
-
-async function fullResolve({ path }) : Promise<string[]> {
-  return new Promise((resolve) => {
-    const options = {
-      ignoreBinPackage: false, // ignore the packages with bin entry
-      skipMissing: false, // skip calculation of missing dependencies
-    }
-
-    depcheck(path, options, (deps) => {
-      resolve(Object.keys(deps.using))
-    })
-  })
-}
-
-async function cheapResolve({ json }) {
-  return Object.keys({
-    ...(json.peerDependencies || {}),
-    ...(json.dependencies || {}),
-  })
-}
+import { fileUtils, resolveUtils } from '@mixt/utils'
 
 async function injectDependencies({ root, allPackages, packages, global }) {
   const rootJson = await fileUtils.getJson(path.resolve(root, 'package.json'))
@@ -56,14 +34,14 @@ async function injectDependencies({ root, allPackages, packages, global }) {
 
     const resolved = []
     if(resolve === 'full') {
-      resolved.push(...(await fullResolve({ path: pkg.dist.path })))
+      resolved.push(...(await resolveUtils.fullResolve({ path: pkg.dist.path })))
     }
 
     if(resolve === 'all') {
-      resolved.push(...(await cheapResolve({ json: rootJson })))
+      resolved.push(...(await resolveUtils.cheapResolve({ json: rootJson })))
     }
 
-    resolved.push(...(await cheapResolve({ json: pkg.dist.json })))
+    resolved.push(...(await resolveUtils.cheapResolve({ json: pkg.dist.json })))
 
     const next = {
       ...pkg.dist.json,
