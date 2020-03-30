@@ -65,11 +65,12 @@ export async function run({ packages, allPackages, root, scripts, quiet, prefix,
     }
 
     if(hoist || global.hoist) {
+      const wasBuilt = pkg.dist.exists
+      await pkg.reload()
       const rootJson = await fileUtils.getJson(path.resolve(root, 'package.json'))
       const nodeModule = await fileUtils.exists(path.resolve(root, 'node_modules', pkg.dist.json.name))
 
-      if(!rootJson.dependencies[pkg.dist.json.name] || !nodeModule || global.hoist) {
-        await pkg.reload()
+      if(!wasBuilt || !rootJson.dependencies[pkg.dist.json.name] || !nodeModule || global.hoist) {
         await hoistCommand({
           packages: [pkg],
           allPackages,

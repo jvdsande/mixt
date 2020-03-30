@@ -5,12 +5,17 @@ import { fileUtils, processUtils } from '@mixt/utils'
 
 import Command from 'command'
 
-function sortDependencies({ dependencies, allPackages, toRemoveDependencies, toInstallDependencies }) {
+async function sortDependencies({ dependencies, allPackages, toRemoveDependencies, toInstallDependencies }) {
   const orderedDependencies = {}
   const alphabeticallyOrderedDependencies = Object.keys(dependencies).sort()
-  alphabeticallyOrderedDependencies.forEach(dep => {
+  await Promise.all(alphabeticallyOrderedDependencies.map(async dep => {
     if(dependencies[dep].startsWith('file:')) {
-      if(allPackages.find(p => (p.src.json.name === dep || p.dist.json.name === dep))) {
+      const pkg = allPackages.find(p => (p.src.json.name === dep || p.dist.json.name === dep))
+      if(pkg) {
+        await pkg.reload()
+      }
+
+      if(pkg && pkg.dist.exists) {
         toInstallDependencies.push(dep)
         orderedDependencies[dep] = dependencies[dep]
       } else {
@@ -18,7 +23,7 @@ function sortDependencies({ dependencies, allPackages, toRemoveDependencies, toI
         cli.info(`Local package ${dep} is not handled by mixt anymore, removing from dependencies`)
       }
     }
-  })
+  }))
   alphabeticallyOrderedDependencies.forEach(dep => {
     if(!dependencies[dep].startsWith('file:')) {
       orderedDependencies[dep] = dependencies[dep]
@@ -53,7 +58,7 @@ export async function hoist({
   // Get all mixt-handled packages to the top
   const toRemoveDependencies = []
   const toInstallDependencies = []
-  rootJson.dependencies = sortDependencies({ dependencies: rootJson.dependencies, allPackages, toRemoveDependencies, toInstallDependencies })
+  rootJson.dependencies = await sortDependencies({ dependencies: rootJson.dependencies, allPackages, toRemoveDependencies, toInstallDependencies })
 
   cli.info('Linking dependencies...')
   await fileUtils.saveJson(path.resolve(root, 'package.json'), rootJson)
