@@ -5,6 +5,29 @@ import { fileUtils, processUtils } from '@mixt/utils'
 
 import Command from 'command'
 
+function sortDependencies({ dependencies, allPackages, toRemoveDependencies, toInstallDependencies }) {
+  const orderedDependencies = {}
+  const alphabeticallyOrderedDependencies = Object.keys(dependencies).sort()
+  alphabeticallyOrderedDependencies.forEach(dep => {
+    if(dependencies[dep].startsWith('file:')) {
+      if(allPackages.find(p => (p.src.json.name === dep || p.dist.json.name === dep))) {
+        toInstallDependencies.push(dep)
+        orderedDependencies[dep] = dependencies[dep]
+      } else {
+        toRemoveDependencies.push(dep)
+        cli.info(`Local package ${dep} is not handled by mixt anymore, removing from dependencies`)
+      }
+    }
+  })
+  alphabeticallyOrderedDependencies.forEach(dep => {
+    if(!dependencies[dep].startsWith('file:')) {
+      orderedDependencies[dep] = dependencies[dep]
+    }
+  })
+
+  return orderedDependencies
+}
+
 /** Command function **/
 export async function hoist({
   packages, allPackages, root, add,
@@ -19,34 +42,18 @@ export async function hoist({
     }
 
     if(!pkg.dist.exists) {
-      cli.info('The package does not seem to be built yet. Don\'t forget to build it!')
+      cli.info('The package does not seem to be built, it cannot be hoisted yet. Don\'t forget to build it!')
+    } else {
+      rootJson.dependencies = rootJson.dependencies || {}
+      rootJson.dependencies[pkg.dist.json.name || pkg.src.json.name] = `file:${pkg.dist.relativePath}`
     }
-
-    rootJson.dependencies = rootJson.dependencies || {}
-    rootJson.dependencies[pkg.dist.json.name || pkg.src.json.name] = `file:${pkg.dist.relativePath}`
   })
 
 
   // Get all mixt-handled packages to the top
-  const orderedDependencies = {}
-  const alphabeticallyOrderedDependencies = Object.keys(rootJson.dependencies).sort()
   const toRemoveDependencies = []
-  alphabeticallyOrderedDependencies.forEach(dep => {
-    if(rootJson.dependencies[dep].startsWith('file:')) {
-      if(allPackages.find(p => p.src.json.name === dep || p.dist.json.name === dep)) {
-        orderedDependencies[dep] = rootJson.dependencies[dep]
-      } else {
-        toRemoveDependencies.push(dep)
-        cli.info(`Local package ${dep} is not handled by mixt anymore, removing from dependencies`)
-      }
-    }
-  })
-  alphabeticallyOrderedDependencies.forEach(dep => {
-    if(!rootJson.dependencies[dep].startsWith('file:')) {
-      orderedDependencies[dep] = rootJson.dependencies[dep]
-    }
-  })
-  rootJson.dependencies = orderedDependencies
+  const toInstallDependencies = []
+  rootJson.dependencies = sortDependencies({ dependencies: rootJson.dependencies, allPackages, toRemoveDependencies, toInstallDependencies })
 
   cli.info('Linking dependencies...')
   await fileUtils.saveJson(path.resolve(root, 'package.json'), rootJson)
@@ -61,7 +68,7 @@ export async function hoist({
     }))
 
     await processUtils.spawnCommand({
-      cmd: 'npm i ' + packages.map(pkg => pkg.dist.json.name || pkg.src.json.name).join(' '),
+      cmd: 'npm i ' + toInstallDependencies.join(' '),
       silent: true,
       params: {
         cwd: root,
