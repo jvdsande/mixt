@@ -8,7 +8,7 @@ import Command from 'command'
 async function sortDependencies({ dependencies, allPackages, toRemoveDependencies, toInstallDependencies }) {
   const orderedDependencies = {}
   const alphabeticallyOrderedDependencies = Object.keys(dependencies).sort()
-  await Promise.all(alphabeticallyOrderedDependencies.map(async dep => {
+  await processUtils.chainedPromises(alphabeticallyOrderedDependencies.map(dep => async () => {
     if(dependencies[dep].startsWith('file:')) {
       const pkg = allPackages.find(p => (p.src.json.name === dep || p.dist.json.name === dep))
       if(pkg) {
