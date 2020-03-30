@@ -1,6 +1,6 @@
 {
   "name": "@mixt/commands",
-  "version": "2.0.21",
+  "version": "2.0.22",
   "description": "Commands for Mixt monorepo",
   "publishConfig": {
     "access": "public"
