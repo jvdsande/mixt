@@ -7,6 +7,8 @@ import StubCommand from 'management/stub'
 import StatusCommand from 'release/status'
 import ReleaseCommand from 'release/release'
 import BundleCommand from 'release/bundle'
+import TagCommand from 'release/tag'
+import UntagCommand from 'release/untag'
 
 import RunCommand from 'script/run'
 import ExecCommand from 'script/exec'
@@ -17,6 +19,6 @@ import TestCommand from 'shorthands/test'
 import StartCommand from 'shorthands/start'
 
 export const ManagementCommands = [InitCommand, AddCommand, ListCommand, HoistCommand, StubCommand]
-export const ReleaseCommands = [StatusCommand, ReleaseCommand, BundleCommand]
+export const ReleaseCommands = [StatusCommand, ReleaseCommand, BundleCommand, TagCommand, UntagCommand]
 export const ScriptCommands = [RunCommand, ExecCommand]
 export const ShorthandsCommands = [BuildCommand, WatchCommand, StartCommand, TestCommand]

@@ -19,6 +19,7 @@ export default function StartCommand(program) {
     name: 'start [packages...]',
     options: [
       options.quiet,
+      options.options,
     ],
     command,
   })

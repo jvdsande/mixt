@@ -19,6 +19,7 @@ export default function WatchCommand(program) {
     name: 'watch [packages...]',
     options: [
       options.quiet,
+      options.options,
     ],
     command,
   })

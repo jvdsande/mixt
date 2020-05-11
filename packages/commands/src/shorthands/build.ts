@@ -20,6 +20,7 @@ export default function BuildCommand(program) {
     options: [
       options.hoist,
       options.quiet,
+      options.options,
     ],
     command: buildCommand,
   })

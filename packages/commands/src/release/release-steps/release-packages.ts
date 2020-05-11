@@ -5,13 +5,36 @@ import { releaseCommand } from 'shorthands/release'
 export default async function releasePackages({ packages, global, quiet }) {
   cli.info('Executing release script')
 
+  // Separate packages between 'next' and 'latest'
+  const next = []
+  const latest = []
+
+  packages.forEach(p => {
+    if(p.dist.next) {
+      next.push(p)
+    } else {
+      latest.push(p)
+    }
+  })
+
   try {
+    // Release 'latest' packages
     await releaseCommand({
-      packages,
+      packages: latest,
       global,
       quiet,
       allPackages: [],
       root: {},
+    })
+
+    // Release 'next' packages
+    await releaseCommand({
+      packages: latest,
+      global,
+      quiet,
+      allPackages: [],
+      root: {},
+      options: '--tag next',
     })
   } catch(err) {
     cli.error('An error occurred during release, reverting versions')

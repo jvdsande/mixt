@@ -5,7 +5,7 @@ import { processUtils } from '@mixt/utils'
 import Command, { options } from 'command'
 
 /** Command function **/
-async function command({ packages, command, quiet }) {
+export async function exec({ packages, command, quiet }) {
   const launchExecs = packages.map(pkg => async () => {
     cli.info(`Found package '${pkg.name}'`)
 
@@ -37,6 +37,6 @@ export default function ExecCommand(program) {
     options: [
       options.quiet,
     ],
-    command,
+    command: exec,
   })
 }

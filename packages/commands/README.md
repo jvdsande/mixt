@@ -130,6 +130,8 @@ All packages are checked sequentially, so only one script ever runs at a time.
   `-s, --sources <sources>` :  Comma-separated list of source folders. Will limit scope to those sources
 
   `-q, --quiet` :              Turn off logging for scripts
+  
+  `-o, --options` :            Command-line options to pass to the script (equivalent to -- syntax for npm run)
 
 
 <br />
@@ -148,7 +150,33 @@ Behaves just like `mixt run`, but takes a bash command to run in each packages i
 <br />
 <br />
 
-## Shorthands commands:
+## Shorthands commands
+
+### `mixt ci [packages...]` :
+
+##### Description
+Shorthand for `mixt exec "npm ci"`. 
+
+##### Available options
+  `-s, --sources <sources>` :  Comma-separated list of source folders. Will limit scope to those sources
+
+  `-q, --quiet` :              Turn off logging for scripts
+  
+<br />
+<br />
+
+### `mixt i [packages...]` :
+
+##### Description
+Shorthand for `mixt exec "npm i"`. Can also be used as `mixt install [packages...]` 
+
+##### Available options
+  `-s, --sources <sources>` :  Comma-separated list of source folders. Will limit scope to those sources
+
+  `-q, --quiet` :              Turn off logging for scripts
+  
+<br />
+<br />
 
 ### `mixt build [packages...]` :
 
@@ -159,6 +187,8 @@ Shorthand for `mixt run build`. Will also match `mixt:build` scripts.
   `-s, --sources <sources>` :  Comma-separated list of source folders. Will limit scope to those sources
 
   `-q, --quiet` :              Turn off logging for scripts
+  
+  `-o, --options` :            Command-line options to pass to the script (equivalent to -- syntax for npm run)
   
 <br />
 <br />
@@ -172,6 +202,8 @@ Shorthand for `mixt run watch`. Will also match `mixt:watch`, `mixt:dev` and `de
   `-s, --sources <sources>` :  Comma-separated list of source folders. Will limit scope to those sources
 
   `-q, --quiet` :              Turn off logging for scripts
+  
+  `-o, --options` :            Command-line options to pass to the script (equivalent to -- syntax for npm run)
 
 <br />
 <br />
@@ -185,6 +217,8 @@ Shorthand for `mixt run start`. Will also match `mixt:start` scripts.
   `-s, --sources <sources>` :  Comma-separated list of source folders. Will limit scope to those sources
 
   `-q, --quiet` :              Turn off logging for scripts
+  
+  `-o, --options` :            Command-line options to pass to the script (equivalent to -- syntax for npm run)
 
 <br />
 <br />
@@ -198,6 +232,8 @@ Shorthand for `mixt run test`. Will also match `mixt:test` scripts.
   `-s, --sources <sources>` :  Comma-separated list of source folders. Will limit scope to those sources
 
   `-q, --quiet` :              Turn off logging for scripts
+  
+  `-o, --options` :            Command-line options to pass to the script (equivalent to -- syntax for npm run)
   
 <br />
 <br />

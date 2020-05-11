@@ -30,14 +30,14 @@ export async function detectScript({ pkg, scripts, prefix, global }) {
     .shift()
 }
 
-export async function executeScript({ pkg, script, quiet }) {
+export async function executeScript({ pkg, script, quiet, options }) {
   if(quiet) {
-    cli.info(`Running '${'npm run ' + script}'`)
+    cli.info(`Running '${'npm run ' + script + (options ? `-- ${options}` : '')}'`)
   }
 
   // Launch the script
   await processUtils.spawnCommand({
-    cmd: 'npm run ' + script,
+    cmd: 'npm run ' + script + (options ? `-- ${options}` : ''),
     silent: quiet,
     params: {
       cwd: pkg.src.path,
@@ -49,7 +49,7 @@ export async function executeScript({ pkg, script, quiet }) {
   }
 }
 
-export async function run({ packages, allPackages, root, scripts, quiet, prefix, global, parallel = false, hoist = false }) {
+export async function run({ packages, allPackages, root, scripts, quiet, prefix, global, parallel = false, hoist = false, options = '' }) {
   const pkgs = []
 
   const launchRuns = packages.map(pkg => async () => {
@@ -57,11 +57,13 @@ export async function run({ packages, allPackages, root, scripts, quiet, prefix,
     const script = await detectScript({ pkg, scripts, prefix, global })
 
     // If a package does not have our script, ignore it
-    if(script) {cli.info(`Found script '${script}' in '${pkg.name}'`)
+    if(script) {
+      cli.info(`Found script '${script}' in '${pkg.name}'`)
+
       pkgs.push(pkg)
 
       // Execute the given script
-      await executeScript({ pkg, script, quiet })
+      await executeScript({ pkg, script, quiet, options })
     }
 
     if(hoist || global.hoist) {
@@ -115,6 +117,7 @@ export default function RunCommand(program) {
     options: [
       options.hoist,
       options.quiet,
+      options.options,
     ],
     command,
   })

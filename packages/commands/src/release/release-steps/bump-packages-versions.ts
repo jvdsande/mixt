@@ -43,12 +43,15 @@ async function bump({ pkg }) {
 
   const privateMsg = `\n(${json.name} is private and will not be published to NPM)`
 
+  const choices = [nextPatch, nextMinor, nextMajor, 'Custom', betaPatch, betaMinor, betaMajor, 'Do not release']
+    .filter((e, i, a) => a.indexOf(e) === i)
+
   let nextVersion = await cliAsk.prompt([{
     name: 'version',
     type: 'list',
     message: `Select the new version for "${json.name}" (current version: ${version}) ${json.private ? privateMsg : ''}`,
     default: 0,
-    choices: [nextPatch, nextMinor, nextMajor, 'Custom', betaPatch, betaMinor, betaMajor, 'Do not release'],
+    choices,
     pageSize: 10,
   }])
 
@@ -68,6 +71,7 @@ async function bump({ pkg }) {
 
   pkg.src.json.version = nextVersion.version
   pkg.dist.json.version = nextVersion.version
+  pkg.dist.next = semver.prerelease(nextVersion.version)
 }
 
 export default async function bumpPackagesVersions({ modifiedPackages }) {

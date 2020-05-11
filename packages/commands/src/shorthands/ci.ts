@@ -2,24 +2,19 @@ import cli from 'cli'
 
 import Command, { options } from 'command'
 
-import { run } from 'script/run'
+import { exec } from 'script/exec'
 
 /** Command function **/
 async function command({ packages, quiet, global, allPackages, root }) {
-  const pkgs = await run({ packages, scripts: ['test'], quiet, prefix: true, global, allPackages, root })
-
-  if(!pkgs.length) {
-    cli.info(`No package implements script 'test', nothing to run`)
-  }
+  await exec({ packages, command: 'npm ci', quiet })
 }
 
 /** Command export */
 export default function TestCommand(program) {
   Command(program, {
-    name: 'test [packages...]',
+    name: 'ci [packages...]',
     options: [
       options.quiet,
-      options.options,
     ],
     command,
   })
