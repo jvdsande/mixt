@@ -19,23 +19,29 @@ export default async function releasePackages({ packages, global, quiet }) {
 
   try {
     // Release 'latest' packages
-    await releaseCommand({
-      packages: latest,
-      global,
-      quiet,
-      allPackages: [],
-      root: {},
-    })
+    if(latest.length) {
+      cli.info('Releasing packages tagged with \'latest\'')
+      await releaseCommand({
+        packages: latest,
+        global,
+        quiet,
+        allPackages: [],
+        root: {},
+      })
+    }
 
     // Release 'next' packages
-    await releaseCommand({
-      packages: latest,
-      global,
-      quiet,
-      allPackages: [],
-      root: {},
-      options: '--tag next',
-    })
+    if(next.length) {
+      cli.info('Releasing packages tagged with \'next\'')
+      await releaseCommand({
+        packages: next,
+        global,
+        quiet,
+        allPackages: [],
+        root: {},
+        options: '--tag next',
+      })
+    }
   } catch(err) {
     cli.error('An error occurred during release, reverting versions')
     return false
