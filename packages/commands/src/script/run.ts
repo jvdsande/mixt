@@ -32,12 +32,12 @@ export async function detectScript({ pkg, scripts, prefix, global }) {
 
 export async function executeScript({ pkg, script, quiet, options }) {
   if(quiet) {
-    cli.info(`Running '${'npm run ' + script + (options ? `-- ${options}` : '')}'`)
+    cli.info(`Running '${'npm run ' + script + (options ? ` -- ${options}` : '')}'`)
   }
 
   // Launch the script
   await processUtils.spawnCommand({
-    cmd: 'npm run ' + script + (options ? `-- ${options}` : ''),
+    cmd: 'npm run ' + script + (options ? ` -- ${options}` : ''),
     silent: quiet,
     params: {
       cwd: pkg.src.path,
