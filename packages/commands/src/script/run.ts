@@ -15,17 +15,18 @@ export async function detectScript({ pkg, scripts, prefix, global }) {
 
   // Get the package options
   const scriptPrefix = pkg.options.prefix || global.prefix
+  const scriptCandidates = [...scripts]
 
   if(prefix) {
-    ([...scripts])
+    [...scriptCandidates]
       .reverse()
       .forEach((script) => {
-        scripts.unshift(scriptPrefix + script)
+        scriptCandidates.unshift(scriptPrefix + script)
       })
   }
 
   // Get first implemented script, if any
-  return scripts
+  return scriptCandidates
     .filter(s => pkg.src.json.scripts[s])
     .shift()
 }
@@ -69,10 +70,11 @@ export async function run({ packages, allPackages, root, scripts, quiet, prefix,
     if(hoist || global.hoist) {
       const wasBuilt = pkg.dist.exists
       await pkg.reload()
+      const isBuilt = pkg.dist.exists
       const rootJson = await fileUtils.getJson(path.resolve(root, 'package.json'))
       const nodeModule = await fileUtils.exists(path.resolve(root, 'node_modules', pkg.dist.json.name))
 
-      if(!wasBuilt || !rootJson.dependencies[pkg.dist.json.name] || !nodeModule || global.hoist) {
+      if(isBuilt && (!wasBuilt || !rootJson.dependencies[pkg.dist.json.name] || !nodeModule || global.hoist)) {
         await hoistCommand({
           packages: [pkg],
           allPackages,
