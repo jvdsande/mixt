@@ -36,11 +36,13 @@ export async function bundleLocalDep({
 
   cli.info('Copying ' + (dependencies.common.length) + ' common deps')
 
-  const nestedDependencies = await getCommonNestedDeps({ packages: dependencies.common, packageLock })
+  const nestedDependencies = (await getCommonNestedDeps({ packages: dependencies.common, packageLock }))
+    .sort()
+    .filter((e, i, a) => !checkedCommonDeps.includes(e) && a.indexOf(e) === i)
 
   cli.info('Found ' + nestedDependencies.length + ' nested dependencies, copying...')
 
-  await Promise.all(nestedDependencies.map(async (dep) => {
+  await processUtils.chainedPromises(nestedDependencies.map((dep) => async () => {
     if(!checkedCommonDeps.includes(dep)) {
       checkedCommonDeps.push(dep)
 
@@ -48,8 +50,10 @@ export async function bundleLocalDep({
         cli.fatal('Dependency "' + dep + '" is missing, it is not possible to create a clean bundle')
       }
 
-      await fileUtils.mkdir(path.resolve(bundleNodeModules, dep))
-      await fileUtils.cp(path.resolve(rootNodeModules, dep), path.resolve(bundleNodeModules, dep))
+      if (!(await fileUtils.exists(path.resolve(bundleNodeModules, dep)))) {
+        await fileUtils.mkdir(path.resolve(bundleNodeModules, dep))
+        await fileUtils.cp(path.resolve(rootNodeModules, dep), path.resolve(bundleNodeModules, dep))
+      }
     }
   }))
 

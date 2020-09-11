@@ -72,35 +72,39 @@ export async function command({
 
   cli.info('Copying ' + (peerDependencies.length) + ' common peer deps')
 
-  const nestedDependencies = await getCommonNestedDeps({ packages: peerDependencies, packageLock })
+  const nestedDependencies = (await getCommonNestedDeps({ packages: peerDependencies, packageLock }))
+    .sort()
+    .filter((e, i, a) => !checkedCommonDeps.includes(e) && a.indexOf(e) === i)
 
   cli.info('Found ' + nestedDependencies.length + ' nested dependencies, copying...')
 
-  await Promise.all(nestedDependencies.map(async (dep) => {
+  await processUtils.chainedPromises(nestedDependencies.map((dep) => async () => {
     if(!checkedCommonDeps.includes(dep)) {
       checkedCommonDeps.push(dep)
 
-      // Peer deps can be either in root node_modules, or in one of the copied local packages node_modules
-      const possiblePaths = [
-        path.resolve(bundleNodeModules, dep),
-        path.resolve(rootNodeModules, dep),
-      ]
+      if (!(await fileUtils.exists(path.resolve(bundleNodeModules, dep)))) {
+        // Peer deps can be either in root node_modules, or in one of the copied local packages node_modules
+        const possiblePaths = [
+          path.resolve(bundleNodeModules, dep),
+          path.resolve(rootNodeModules, dep),
+        ]
 
-      checkedLocalDeps.forEach(d => {
-        if(dep !== packages[0]) {
-          possiblePaths.push(path.resolve(bundleNodeModules, d.dist.json.name, 'node_modules', dep))
+        checkedLocalDeps.forEach(d => {
+          if(dep !== packages[0]) {
+            possiblePaths.push(path.resolve(bundleNodeModules, d.dist.json.name, 'node_modules', dep))
+          }
+        })
+
+        const depPath = possiblePaths.find(p => fs.existsSync(p))
+
+        if(!depPath) {
+          cli.fatal('Dependency "' + dep + '" is missing, it is not possible to create a clean bundle')
         }
-      })
 
-      const depPath = possiblePaths.find(p => fs.existsSync(p))
-
-      if(!depPath) {
-        cli.fatal('Dependency "' + dep + '" is missing, it is not possible to create a clean bundle')
-      }
-
-      if(depPath !== path.resolve(bundleNodeModules, dep)) {
-        await fileUtils.mkdir(path.resolve(bundleNodeModules, dep))
-        await fileUtils.cp(depPath, path.resolve(bundleNodeModules, dep))
+        if (depPath !== path.resolve(bundleNodeModules, dep)) {
+          await fileUtils.mkdir(path.resolve(bundleNodeModules, dep))
+          await fileUtils.cp(depPath, path.resolve(bundleNodeModules, dep))
+        }
       }
     }
   }))
