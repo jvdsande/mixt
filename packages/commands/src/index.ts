@@ -17,8 +17,10 @@ import BuildCommand from 'shorthands/build'
 import WatchCommand from 'shorthands/watch'
 import TestCommand from 'shorthands/test'
 import StartCommand from 'shorthands/start'
+import InstallCommand from 'shorthands/install'
+import CICommand from 'shorthands/ci'
 
 export const ManagementCommands = [InitCommand, AddCommand, ListCommand, HoistCommand, StubCommand]
 export const ReleaseCommands = [StatusCommand, ReleaseCommand, BundleCommand, TagCommand, UntagCommand]
 export const ScriptCommands = [RunCommand, ExecCommand]
-export const ShorthandsCommands = [BuildCommand, WatchCommand, StartCommand, TestCommand]
+export const ShorthandsCommands = [BuildCommand, WatchCommand, StartCommand, TestCommand, InstallCommand, CICommand]
