@@ -14,7 +14,7 @@ export async function exec({ packages, command, quiet }) {
     }
 
     // Launch the script
-    await processUtils.spawnCommand({
+    await processUtils.execCommand({
       cmd: command,
       silent: quiet,
       params: {

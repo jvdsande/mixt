@@ -2,7 +2,7 @@ import fs from 'fs'
 import cli from 'cli'
 import path from 'path'
 
-import { fileUtils, processUtils, resolveUtils } from '@mixt/utils'
+import { fileUtils, processUtils } from '@mixt/utils'
 
 import Command, {options} from 'command'
 

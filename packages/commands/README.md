@@ -297,7 +297,7 @@ That is quite a lot, but it is what is most often needed for any releases. Here 
 
 ##### Description
 Helper command for bundling a package with all its dependency cleanly hoisted to its level. This command is aimed
-at helping creating a container (i.e. Docker) aimed at a single application inside a monorepo. It does not transpile
+at helping create a container (i.e. Docker) aimed at a single application inside a monorepo. It does not transpile
 the code in any way, it only isolates a package from the rest of the repository while keeping it launchable.
 
 Here is the complete **Mixt** bundle flow:

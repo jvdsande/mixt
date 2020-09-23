@@ -12,6 +12,7 @@ import UntagCommand from 'release/untag'
 
 import RunCommand from 'script/run'
 import ExecCommand from 'script/exec'
+import ShCommand from 'script/sh'
 
 import BuildCommand from 'shorthands/build'
 import WatchCommand from 'shorthands/watch'
@@ -22,5 +23,5 @@ import CICommand from 'shorthands/ci'
 
 export const ManagementCommands = [InitCommand, AddCommand, ListCommand, HoistCommand, StubCommand]
 export const ReleaseCommands = [StatusCommand, ReleaseCommand, BundleCommand, TagCommand, UntagCommand]
-export const ScriptCommands = [RunCommand, ExecCommand]
+export const ScriptCommands = [RunCommand, ExecCommand, ShCommand]
 export const ShorthandsCommands = [BuildCommand, WatchCommand, StartCommand, TestCommand, InstallCommand, CICommand]
