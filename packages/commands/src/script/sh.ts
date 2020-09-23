@@ -2,7 +2,7 @@ import cli from 'cli'
 
 import { processUtils } from '@mixt/utils'
 
-import Command, { options } from 'command'
+import Command from 'command'
 
 /** Command function **/
 export async function exec({ packages, command, quiet }) {
@@ -23,14 +23,11 @@ export async function exec({ packages, command, quiet }) {
 
   const cmd = userShell || (hasBash ? 'bash' : hasSh ? 'sh' : null)
 
-
   if(!cmd) {
     cli.fatal('mixt sh needs sh or bash to be installed on your machine')
   }
 
   cli.info(`Starting interactive shell '${cmd}'`)
-
-  console.log(process.getuid())
 
   // Launch the script
   await processUtils.spawnCommand({
