@@ -28,12 +28,16 @@ async function extractPackages(sources, root, buildOrder) {
     const packagesNames = await readDir(source)
 
     // Go through each packages
-    const packages = await Promise.all(packagesNames.map(async name => {
+    const packages = (await Promise.all(packagesNames.map(async name => {
       // Get the package path
       const srcPath = path.resolve(source, name)
 
       // Retrieve the package's package.json
       const srcJson = await getPackageJson(srcPath)
+
+      if(!srcJson || Object.keys(srcJson).length < 1) {
+        return null
+      }
 
       const src = {
         exists: !!srcJson.name,
@@ -76,7 +80,8 @@ async function extractPackages(sources, root, buildOrder) {
           dist.json = distJsonReloaded
         }
       }
-    }))
+    })))
+      .filter(p => !!p)
 
     return packages.sort((a, b) => {
       const aSrcNameOrderIndex =  a.src.exists ? buildOrder.indexOf(a.src.json.name) : -1
