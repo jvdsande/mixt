@@ -36,7 +36,7 @@
     "ncp": "^2.0.0",
     "rimraf": "^3.0.2",
     "semver": "^5.6.0",
-    "simple-git": "^1.107.0",
+    "simple-git": "^3.3.0",
     "typescript": "^3.3.3"
   },
   "mixt": {
